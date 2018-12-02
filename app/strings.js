@@ -88,7 +88,7 @@ strings.commands = {
     /* /about */
     about: {
         cmd_description: '/about - About the bot',
-        text: 'BläkkisVuohi is a bot currently developed and maintained by @ultsi. It\'s completely open source, free and licensed under GPLv3. Source code can be found at https://github.com/ultsi/blakkisvuohi. Terms of Service and Privacy Policy can be found by using the command /terms'
+        text: 'BläkkisVuohi is a bot currently developed and maintained by @ultsi. It\'s completely open source, free and licensed under GPLv3. Source code can be found at https://gitlab.com/ultsi-projects/blakkisvuohi. Terms of Service and Privacy Policy can be found by using the command /terms'
     },
 
     /* /admin_loglevel */
@@ -124,7 +124,7 @@ strings.commands = {
             header_drinks1h: '*Viimeisen tunnin tapahtumat:*\n{drinkList1h}\n',
             header_title: 'Juo',
             on_select: 'Valitse juomasi alla olevista valikoista. Jos et löydä etsimääsi, klikkaa *Oma juoma*. Jos olet unohtanut lisätä juomia, voit lisätä ne takautuvasti valitsemalla *Jälkikellotus*. Jos lisäsit vahingossa väärän juoman, valitse *Kumoa*. Kaksi alinta nappia ovat pikavalinnat kahdelle viimeisimmälle juomalle.',
-            on_drink: '{drink_response} Juoma tallennettu.',
+            on_drink: '{drink_response}\n\nJuoma tallennettu.',
             miedot: {
                 button_text: strings.emoji.beers + ' Miedot',
                 header_title: 'Miedot',

@@ -267,6 +267,10 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
                         context.storeVariable('_started', true);
                         return context.sendMessageObj(phase.startMessage);
                     }
+                    if (!phase.validateInput) {
+                      // phase ended, return silently
+                      return context.end();
+                    }
                     if (!phase.validateInput(context, msg, words, user)) {
                         return context.sendMessageObj(phase.errorMessage);
                     }

@@ -109,7 +109,7 @@ let command = {
                 .then((ebac) => {
                     const permilles = ebac.permilles;
                     const permilles30Min = ebac.permilles30Min;
-                    return context.privateReply(utils.getRandomFromArray(strings.drink_responses) + ' ' + strings.short_permilles_text.format({
+                    return context.privateReply(utils.getRandomFromArray(strings.drink_responses) + '\n\n' + strings.short_permilles_text.format({
                         permilles: utils.roundTo(permilles, 2),
                         permilles30Min: utils.roundTo(permilles30Min, 2)
                     }));
