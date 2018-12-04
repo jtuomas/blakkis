@@ -7,8 +7,10 @@ cache:
   paths:
   - node_modules/
 
-test_async:
+mocha:
   stage: test
   script:
-   - npm install
-   - export $(cat .env_tests) && ./node_modules/mocha/bin/mocha -w test/*
+  - npm install
+  - export $(cat .env_tests)
+  - node setup_test_db.js
+  - ./node_modules/mocha/bin/mocha test/*
