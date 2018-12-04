@@ -1,0 +1,14 @@
+image: node:8.7.0
+
+services:
+  - postgres:9.6.5-alpine
+
+cache:
+  paths:
+  - node_modules/
+
+test_async:
+  stage: test
+  script:
+   - npm install
+   - export $(cat .env_tests) && ./node_modules/mocha/bin/mocha -w test/*
