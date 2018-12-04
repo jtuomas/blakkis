@@ -14,6 +14,7 @@ mocha:
   stage: test
   script:
     - npm install
+    - npm rebuild
     - export $(cat .env_tests)
     - node setup_test_db.js
     - ./node_modules/mocha/bin/mocha test/*
