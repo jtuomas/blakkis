@@ -1,4 +1,4 @@
-image: node:10.13.0
+image: node:10.14.1-jessie
 
 services:
   - postgres:9.6.5-alpine
