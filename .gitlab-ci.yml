@@ -1,4 +1,4 @@
-image: node:8.7.0
+image: node:10.13.0
 
 services:
   - postgres:9.6.5-alpine
@@ -7,10 +7,13 @@ cache:
   paths:
   - node_modules/
 
+stages:
+  - test
+
 mocha:
   stage: test
   script:
-  - npm install
-  - export $(cat .env_tests)
-  - node setup_test_db.js
-  - ./node_modules/mocha/bin/mocha test/*
+    - npm install
+    - export $(cat .env_tests)
+    - node setup_test_db.js
+    - ./node_modules/mocha/bin/mocha test/*
