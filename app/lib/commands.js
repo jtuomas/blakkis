@@ -292,7 +292,7 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
                 }
             })
             .then(() => {
-                log.info(`executed cmd ${cmd.name}`);
+                log.debug(`executed cmd ${cmd.name}`);
                 return Promise.resolve();
             });
     }).catch((err) => {
