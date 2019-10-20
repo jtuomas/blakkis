@@ -22,7 +22,7 @@
 */
 'use strict';
 
-let message = module.exports = {};
+let message = (module.exports = {});
 
 /*
     Types available
@@ -33,43 +33,43 @@ let message = module.exports = {};
 */
 
 function Message(text, options) {
-    this.text = text;
-    this.options = options;
-    this.type = 'message';
+  this.text = text;
+  this.options = options;
+  this.type = 'message';
 }
 
 message.Message = Message;
 
 message.ChatMessage = (text, options) => {
-    let msg = new Message(text, options);
-    msg.type = 'chat_message';
-    return msg;
+  let msg = new Message(text, options);
+  msg.type = 'chat_message';
+  return msg;
 };
 
 message.PrivateMessage = (text, options) => {
-    let msg = new Message(text, options);
-    msg.type = 'private_message';
-    return msg;
+  let msg = new Message(text, options);
+  msg.type = 'private_message';
+  return msg;
 };
 
 message.PrivateKeyboardMessage = (text, keyboardButtons) => {
-    let options = {
-        'parse_mode': 'Markdown',
-        'reply_markup': {
-            'keyboard': keyboardButtons,
-            'resize_keyboard': true,
-            'one_time_keyboard': false
-        }
-    };
-    return message.PrivateMessage(text, options);
+  let options = {
+    parse_mode: 'Markdown',
+    reply_markup: {
+      keyboard: keyboardButtons,
+      resize_keyboard: true,
+      one_time_keyboard: false,
+    },
+  };
+  return message.PrivateMessage(text, options);
 };
 
 message.Photo = (buffer, caption) => {
-    let options = {
-        caption: caption
-    };
-    let msg = new Message('photo', options);
-    msg.type = 'photo';
-    msg.buffer = buffer;
-    return msg;
+  let options = {
+    caption: caption,
+  };
+  let msg = new Message('photo', options);
+  msg.type = 'photo';
+  msg.buffer = buffer;
+  return msg;
 };

@@ -33,20 +33,20 @@ var app = express();
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-    res.json({
-        version: packageInfo.version
-    });
+  res.json({
+    version: packageInfo.version,
+  });
 });
 
 var server = app.listen(process.env.PORT, '0.0.0.0', () => {
-    var host = server.address().address;
-    var port = server.address().port;
-    log.info('Web server started at http://%s:%s', host, port);
+  var host = server.address().address;
+  var port = server.address().port;
+  log.info('Web server started at http://%s:%s', host, port);
 });
 
 module.exports = function(bot, token) {
-    app.post('/' + token, (req, res) => {
-        bot.processUpdate(req.body);
-        res.sendStatus(200);
-    });
+  app.post('/' + token, (req, res) => {
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+  });
 };

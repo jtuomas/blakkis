@@ -31,25 +31,26 @@ const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
 
 describe('kalja033.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
-    it('Calling /kalja033 should add a drink to db for the user and return ebac', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const user = blakkistest.users[0];
-        mocked.msg.from.id = blakkistest.realIds[0];
+  beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+  it('Calling /kalja033 should add a drink to db for the user and return ebac', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const user = blakkistest.users[0];
+    mocked.msg.from.id = blakkistest.realIds[0];
 
-        user.getBooze()
-            .then((rows) => {
-                assert.equal(rows.length, 2);
-                assert(!rows.find(x => x.description === '/kalja033'));
-                return Commands.call('/kalja033', mocked.msg, ['/kalja033']);
-            })
-            .then(() => user.getBooze())
-            .then((rows) => {
-                assert.equal(rows.length, 3);
-                assert(rows.find(x => x.description === '/kalja033'));
-                assert.notEqual(mocked.internals.sentText.match('‰'), null);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+    user
+      .getBooze()
+      .then(rows => {
+        assert.equal(rows.length, 2);
+        assert(!rows.find(x => x.description === '/kalja033'));
+        return Commands.call('/kalja033', mocked.msg, ['/kalja033']);
+      })
+      .then(() => user.getBooze())
+      .then(rows => {
+        assert.equal(rows.length, 3);
+        assert(rows.find(x => x.description === '/kalja033'));
+        assert.notEqual(mocked.internals.sentText.match('‰'), null);
+        done();
+      })
+      .catch(err => done(err));
+  });
 });

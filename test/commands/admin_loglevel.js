@@ -33,51 +33,54 @@ const settings = require('../../app/settings.js');
 const log = require('loglevel');
 
 describe('admin_loglevel.js', function() {
-    it('Calling /admin_loglevel without arguments should change \'commands\' level to \'info\'', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = settings.admin_id;
-        log.getLogger('commands').setLevel(log.levels.DEBUG);
-        assert.equal(log.getLogger('commands').getLevel(), log.levels.DEBUG);
-        Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert(mocked.internals.sentText.length > 10);
-                assert.equal(log.getLogger('commands').getLevel(), log.levels.INFO);
-                done();
-            }).catch((err) => done(err));
-    });
+  it("Calling /admin_loglevel without arguments should change 'commands' level to 'info'", function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = settings.admin_id;
+    log.getLogger('commands').setLevel(log.levels.DEBUG);
+    assert.equal(log.getLogger('commands').getLevel(), log.levels.DEBUG);
+    Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert(mocked.internals.sentText.length > 10);
+        assert.equal(log.getLogger('commands').getLevel(), log.levels.INFO);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    it('Calling /admin_loglevel with arguments system debug should change \'system\' level to \'debug\'', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = settings.admin_id;
-        log.getLogger('system').setLevel(log.levels.INFO);
-        assert.equal(log.getLogger('system').getLevel(), log.levels.INFO);
-        Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel', 'system', 'debug'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert(mocked.internals.sentText.length > 10);
-                assert.equal(log.getLogger('system').getLevel(), log.levels.DEBUG);
-                done();
-            }).catch((err) => done(err));
-    });
+  it("Calling /admin_loglevel with arguments system debug should change 'system' level to 'debug'", function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = settings.admin_id;
+    log.getLogger('system').setLevel(log.levels.INFO);
+    assert.equal(log.getLogger('system').getLevel(), log.levels.INFO);
+    Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel', 'system', 'debug'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert(mocked.internals.sentText.length > 10);
+        assert.equal(log.getLogger('system').getLevel(), log.levels.DEBUG);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    it('Calling /admin_loglevel with arguments db info should change \'db\' level to \'info\'', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = settings.admin_id;
-        log.getLogger('db').setLevel(log.levels.DEBUG);
-        assert.equal(log.getLogger('db').getLevel(), log.levels.DEBUG);
-        Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel', 'db', 'info'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert(mocked.internals.sentText.length > 10);
-                assert.equal(log.getLogger('db').getLevel(), log.levels.INFO);
-                done();
-            }).catch((err) => done(err));
-    });
+  it("Calling /admin_loglevel with arguments db info should change 'db' level to 'info'", function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = settings.admin_id;
+    log.getLogger('db').setLevel(log.levels.DEBUG);
+    assert.equal(log.getLogger('db').getLevel(), log.levels.DEBUG);
+    Commands.call('/admin_loglevel', mocked.msg, ['/admin_loglevel', 'db', 'info'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert(mocked.internals.sentText.length > 10);
+        assert.equal(log.getLogger('db').getLevel(), log.levels.INFO);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    after(function() {
-        log.getLogger('system').setLevel('info');
-        log.getLogger('db').setLevel('info');
-        log.getLogger('commands').setLevel('info');
-    });
+  after(function() {
+    log.getLogger('system').setLevel('info');
+    log.getLogger('db').setLevel('info');
+    log.getLogger('commands').setLevel('info');
+  });
 });

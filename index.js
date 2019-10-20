@@ -25,34 +25,33 @@
 'use strict';
 
 const TOKEN = process.env.TOKEN;
-const NEWRELIC = (process.env.NEWRELIC === 'true');
-if(NEWRELIC) {
-    global.newrelic = require('newrelic');
+const NEWRELIC = process.env.NEWRELIC === 'true';
+if (NEWRELIC) {
+  global.newrelic = require('newrelic');
 }
 
 const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
 const log = require('loglevel').getLogger('system');
 
-
 // Setup bot
 let bot;
 
 if (BOT_MODE === 'polling') {
-    const botOptions = {
-        polling: true // used when no HTTPS:// connection available
-    };
-    bot = new Bot(TOKEN, botOptions);
+  const botOptions = {
+    polling: true, // used when no HTTPS:// connection available
+  };
+  bot = new Bot(TOKEN, botOptions);
 } else {
-    bot = new Bot(TOKEN);
+  bot = new Bot(TOKEN);
 
-    // This informs the Telegram servers of the new webhook.
-    // Note: we do not need to pass in the cert, as it already provided
-    // bot.setWebHook(`${url}/bot${TOKEN}`);
-    bot.setWebHook(process.env.APP_URL + TOKEN);
+  // This informs the Telegram servers of the new webhook.
+  // Note: we do not need to pass in the cert, as it already provided
+  // bot.setWebHook(`${url}/bot${TOKEN}`);
+  bot.setWebHook(process.env.APP_URL + TOKEN);
 
-    // Load web server
-    require('./web.js')(bot, TOKEN);
+  // Load web server
+  require('./web.js')(bot, TOKEN);
 }
 
 // Load app

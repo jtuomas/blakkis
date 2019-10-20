@@ -33,29 +33,33 @@ const groups = require('../../app/db/groups.js');
 const strings = require('../../app/strings.js');
 
 describe('moro.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
-    it('Calling /moro should join the user to the group', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const groupId = mocked.chatId + 1;
-        const group = new groups.Group(groupId);
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.id = groupId;
-        mocked.msg.chat.type = 'chat';
+  beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+  it('Calling /moro should join the user to the group', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const groupId = mocked.chatId + 1;
+    const group = new groups.Group(groupId);
+    mocked.msg.from.id = blakkistest.realIds[0];
+    mocked.msg.chat.id = groupId;
+    mocked.msg.chat.type = 'chat';
 
-        group.getDrinkSum()
-            .then((res) => {
-                assert.equal(res.sum, 0);
-                return Commands.call('/moro', mocked.msg, ['/moro']);
-            })
-            .then(() => group.getDrinkSum())
-            .then((res) => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.equal(mocked.internals.sentText, strings.commands.moro.join_text.format({
-                    chat_title: mocked.msg.chat.title
-                }));
-                assert.equal(res.sum, 12347 * 2);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+    group
+      .getDrinkSum()
+      .then(res => {
+        assert.equal(res.sum, 0);
+        return Commands.call('/moro', mocked.msg, ['/moro']);
+      })
+      .then(() => group.getDrinkSum())
+      .then(res => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+        assert.equal(
+          mocked.internals.sentText,
+          strings.commands.moro.join_text.format({
+            chat_title: mocked.msg.chat.title,
+          }),
+        );
+        assert.equal(res.sum, 12347 * 2);
+        done();
+      })
+      .catch(err => done(err));
+  });
 });

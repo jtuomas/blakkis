@@ -26,21 +26,21 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function helpCommand(context, msg, words) {
-    const cmdListStr = Object.values(Commands.__cmds__)
-        .filter(cmd => cmd.privilege !== Commands.PRIVILEGE_ADMIN)
-        .map(cmd => cmd.help)
-        .join('\n');
-    const cmdStr = strings.commands.blakkis.cmd_list.format({
-        cmd_list: cmdListStr
-    });
-    return msg.sendPrivateMessage(strings.commands.blakkis.help_text + '\n\n' + cmdStr);
+  const cmdListStr = Object.values(Commands.__cmds__)
+    .filter(cmd => cmd.privilege !== Commands.PRIVILEGE_ADMIN)
+    .map(cmd => cmd.help)
+    .join('\n');
+  const cmdStr = strings.commands.blakkis.cmd_list.format({
+    cmd_list: cmdListStr,
+  });
+  return msg.sendPrivateMessage(strings.commands.blakkis.help_text + '\n\n' + cmdStr);
 }
 
 Commands.register(
-    '/help',
-    strings.commands.help.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ALL,
-    Commands.TYPE_SINGLE,
-    helpCommand
+  '/help',
+  strings.commands.help.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_ALL,
+  Commands.TYPE_SINGLE,
+  helpCommand,
 );

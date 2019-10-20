@@ -24,20 +24,23 @@
 const pg = require('pg');
 const fs = require('fs');
 const pool = new pg.Pool({
-    connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
 });
 
 fs.readFile('app/schema.sql', (err, data) => {
-  if(err) {
+  if (err) {
     console.err(err);
     process.exit(-1);
   }
   const sql = data.toString();
-  pool.query(sql).then(() => {
-    console.log('Database set up')
-    process.exit(0);
-  }).catch((err) => {
-    console.err(err);
-    process.exit(-1);
-  })
-})
+  pool
+    .query(sql)
+    .then(() => {
+      console.log('Database set up');
+      process.exit(0);
+    })
+    .catch(err => {
+      console.err(err);
+      process.exit(-1);
+    });
+});

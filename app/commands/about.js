@@ -26,16 +26,16 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function aboutCommand(context, msg, words) {
-    return msg.sendPrivateMessage(strings.commands.about.text, {
-        'parse_mode': 'Markdown'
-    });
+  return msg.sendPrivateMessage(strings.commands.about.text, {
+    parse_mode: 'Markdown',
+  });
 }
 
 Commands.register(
-    '/about',
-    strings.commands.about.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ALL,
-    Commands.TYPE_SINGLE,
-    aboutCommand
+  '/about',
+  strings.commands.about.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_ALL,
+  Commands.TYPE_SINGLE,
+  aboutCommand,
 );
