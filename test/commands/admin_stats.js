@@ -32,14 +32,15 @@ const Commands = require('../../app/lib/commands.js');
 const settings = require('../../app/settings.js');
 
 describe('admin_stats.js', function() {
-    it('Calling /admin_stats should print global stats', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = settings.admin_id;
-        Commands.call('/admin_stats', mocked.msg, ['/admin_stats'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert(mocked.internals.sentText.match(/\n/g).length > 4);
-                done();
-            }).catch((err) => done(err));
-    });
+  it('Calling /admin_stats should print global stats', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = settings.admin_id;
+    Commands.call('/admin_stats', mocked.msg, ['/admin_stats'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert(mocked.internals.sentText.match(/\n/g).length > 4);
+        done();
+      })
+      .catch(err => done(err));
+  });
 });

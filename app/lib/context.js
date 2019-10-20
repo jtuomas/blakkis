@@ -24,156 +24,159 @@
 'use strict';
 
 const log = require('loglevel').getLogger('system');
-let contexts = module.exports = {};
+let contexts = (module.exports = {});
 
 contexts.Context = class {
-    constructor(cmd, msg) {
-        this.cmd = cmd;
-        this.msg = msg;
-        this.phase = 'start';
-        this.variables = {};
-        this.inline_ui = {
-            state: null,
-            parent: null
-        };
-        this.lastSentMessage = {};
+  constructor(cmd, msg) {
+    this.cmd = cmd;
+    this.msg = msg;
+    this.phase = 'start';
+    this.variables = {};
+    this.inline_ui = {
+      state: null,
+      parent: null,
+    };
+    this.lastSentMessage = {};
+  }
+
+  sendMessage(to_id, text, options) {
+    options = options ? options : {};
+    this.lastSentMessage = {
+      to: to_id,
+      text: text,
+      options: options,
+    };
+    return this.msg.sendMessage(to_id, text, options);
+  }
+
+  editMessage(message_id, chat_id, text, options) {
+    options = options ? options : {};
+    if (!message_id || !chat_id) {
+      log.error('message_id and chat_id not both supplied!');
+      return Promise.reject(new Error('message_id and chat_id not both supplied!'));
+    }
+    if (this.lastSentMessage.text === text) {
+      // do not send edit query if text wasn't edited
+      return Promise.resolve();
     }
 
-    sendMessage(to_id, text, options) {
-        options = options ? options : {};
-        this.lastSentMessage = {
-            to: to_id,
-            text: text,
-            options: options
-        };
-        return this.msg.sendMessage(to_id, text, options);
+    options.message_id = message_id;
+    options.chat_id = chat_id;
+
+    this.lastSentMessage = {
+      to: chat_id,
+      edit_message_id: message_id,
+      text: text,
+      options: options,
+    };
+
+    return this.msg.editMessageText(text, options);
+  }
+
+  privateReply(text) {
+    let options = {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        remove_keyboard: true,
+      },
+    };
+    return this.sendMessage(this.msg.from.id, text, options);
+  }
+
+  privateReplyWithKeyboard(text, keyboardButtons) {
+    let options = {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        keyboard: keyboardButtons,
+        resize_keyboard: true,
+      },
+    };
+    return this.sendMessage(this.msg.from.id, text, options);
+  }
+
+  inlineKeyboardMessage(text, inlineKeyboardButtons) {
+    let options = {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: inlineKeyboardButtons,
+        remove_keyboard: true,
+      },
+    };
+    return this.sendMessage(this.msg.from.id, text, options);
+  }
+
+  inlineKeyboardEdit(text, inlineKeyboardButtons) {
+    const options = {
+      parse_mode: 'Markdown',
+      reply_markup: {
+        inline_keyboard: inlineKeyboardButtons,
+        remove_keyboard: true,
+      },
+    };
+    return this.editMessage(this.msg.message.message_id, this.msg.message.chat.id, text, options);
+  }
+
+  chatReply(text) {
+    return this.msg.sendMessage(this.msg.chat.id, text);
+  }
+
+  photoReply(stream, caption) {
+    return this.msg.sendPhoto(this.msg.chat.id, stream, {
+      caption: caption,
+    });
+  }
+
+  sendMessageObj(message) {
+    if (!message || !message.type || !message.text) {
+      return Promise.reject(new Error('invalid message object'));
     }
 
-    editMessage(message_id, chat_id, text, options) {
-        options = options ? options : {};
-        if (!message_id || !chat_id) {
-            log.error('message_id and chat_id not both supplied!');
-            return Promise.reject(new Error('message_id and chat_id not both supplied!'));
-        }
-        if (this.lastSentMessage.text === text) {
-            // do not send edit query if text wasn't edited
-            return Promise.resolve();
-        }
-
-        options.message_id = message_id;
-        options.chat_id = chat_id;
-
-        this.lastSentMessage = {
-            to: chat_id,
-            edit_message_id: message_id,
-            text: text,
-            options: options
-        };
-
-        return this.msg.editMessageText(text, options);
+    if (message.type === 'photo') {
+      return this.msg.sendPhoto(this.msg.chat.id, message.buffer, message.options);
+    } else {
+      let to = message.type === 'private_message' ? this.msg.from : this.msg.chat;
+      return this.msg.sendMessage(to.id, message.text, message.options);
     }
+  }
 
-    privateReply(text) {
-        let options = {
-            'parse_mode': 'Markdown',
-            'reply_markup': {
-                'remove_keyboard': true
-            }
-        };
-        return this.sendMessage(this.msg.from.id, text, options);
-    }
+  setInlineState(state) {
+    this.inline_ui.state = state;
+  }
 
-    privateReplyWithKeyboard(text, keyboardButtons) {
-        let options = {
-            'parse_mode': 'Markdown',
-            'reply_markup': {
-                'keyboard': keyboardButtons,
-                'resize_keyboard': true
-            }
-        };
-        return this.sendMessage(this.msg.from.id, text, options);
-    }
+  get state() {
+    return this.inline_ui.state;
+  }
 
-    inlineKeyboardMessage(text, inlineKeyboardButtons) {
-        let options = {
-            'parse_mode': 'Markdown',
-            'reply_markup': {
-                'inline_keyboard': inlineKeyboardButtons,
-                'remove_keyboard': true
-            }
-        };
-        return this.sendMessage(this.msg.from.id, text, options);
-    }
+  storeVariable(key, value) {
+    this.variables[key] = value;
+  }
 
-    inlineKeyboardEdit(text, inlineKeyboardButtons) {
-        const options = {
-            'parse_mode': 'Markdown',
-            'reply_markup': {
-                'inline_keyboard': inlineKeyboardButtons,
-                'remove_keyboard': true
-            }
-        };
-        return this.editMessage(this.msg.message.message_id, this.msg.message.chat.id, text, options);
-    }
+  fetchVariable(key) {
+    return this.variables[key];
+  }
 
-    chatReply(text) {
-        return this.msg.sendMessage(this.msg.chat.id, text);
-    }
+  forgetVariable(key) {
+    this.variables[key] = undefined;
+  }
 
-    photoReply(stream, caption) {
-        return this.msg.sendPhoto(this.msg.chat.id, stream, {
-            caption: caption
-        });
-    }
+  toPhase(phase) {
+    this.phase = phase;
+  }
 
-    sendMessageObj(message) {
-        if (!message || !message.type || !message.text) {
-            return Promise.reject(new Error('invalid message object'));
-        }
+  end() {
+    this.phase = -1;
+    this.variables = 0;
+    return Promise.resolve();
+  }
 
-        if (message.type === 'photo') {
-            return this.msg.sendPhoto(this.msg.chat.id, message.buffer, message.options);
-        } else {
-            let to = message.type === 'private_message' ? this.msg.from : this.msg.chat;
-            return this.msg.sendMessage(to.id, message.text, message.options);
-        }
-    }
+  isPrivateChat() {
+    return (
+      (this.msg.chat && this.msg.chat.type === 'private') ||
+      (this.msg.message && this.msg.message.chat.type === 'private')
+    );
+  }
 
-    setInlineState(state) {
-        this.inline_ui.state = state;
-    }
-
-    get state() {
-        return this.inline_ui.state;
-    }
-
-    storeVariable(key, value) {
-        this.variables[key] = value;
-    }
-
-    fetchVariable(key) {
-        return this.variables[key];
-    }
-
-    forgetVariable(key) {
-        this.variables[key] = undefined;
-    }
-
-    toPhase(phase) {
-        this.phase = phase;
-    }
-
-    end() {
-        this.phase = -1;
-        this.variables = 0;
-        return Promise.resolve();
-    }
-
-    isPrivateChat() {
-        return this.msg.chat && this.msg.chat.type === 'private' || this.msg.message && this.msg.message.chat.type === 'private';
-    }
-
-    hasEnded() {
-        return this.phase === -1;
-    }
+  hasEnded() {
+    return this.phase === -1;
+  }
 };

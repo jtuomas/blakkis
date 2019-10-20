@@ -25,20 +25,21 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function moro(context, msg, words, user) {
-    return user.joinGroup(msg.chat.id)
-        .then(() => {
-            context.end();
-            return context.chatReply(strings.commands.moro.join_text.format({
-                chat_title: msg.chat.title
-            }));
-        });
+  return user.joinGroup(msg.chat.id).then(() => {
+    context.end();
+    return context.chatReply(
+      strings.commands.moro.join_text.format({
+        chat_title: msg.chat.title,
+      }),
+    );
+  });
 }
 
 Commands.register(
-    '/moro',
-    strings.commands.moro.cmd_description,
-    Commands.SCOPE_CHAT,
-    Commands.PRIVILEGE_USER,
-    Commands.TYPE_SINGLE,
-    moro
+  '/moro',
+  strings.commands.moro.cmd_description,
+  Commands.SCOPE_CHAT,
+  Commands.PRIVILEGE_USER,
+  Commands.TYPE_SINGLE,
+  moro,
 );

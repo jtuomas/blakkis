@@ -26,33 +26,32 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function loglevel(context, msg, words, user) {
+  let what = words[1] || 'commands';
+  let level = words[2] || 'info';
+  if (level !== 'error' && level !== 'debug') {
+    level = 'info';
+  }
 
-    let what = words[1] || 'commands';
-    let level = words[2] || 'info';
-    if (level !== 'error' && level !== 'debug') {
-        level = 'info';
-    }
+  if (what !== 'system' && what !== 'db' && what !== 'commands') {
+    what = 'commands';
+  }
 
-    if (what !== 'system' && what !== 'db' && what !== 'commands') {
-        what = 'commands';
-    }
+  log.getLogger(what).setLevel(level);
+  context.end();
 
-    log.getLogger(what).setLevel(level);
-    context.end();
-
-
-    return context.privateReply(strings.commands.admin_loglevel.level_set_text.format({
-        logger: what,
-        level: level
-    }));
-
+  return context.privateReply(
+    strings.commands.admin_loglevel.level_set_text.format({
+      logger: what,
+      level: level,
+    }),
+  );
 }
 
 Commands.register(
-    '/admin_loglevel',
-    strings.commands.admin_loglevel.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ADMIN,
-    Commands.TYPE_SINGLE,
-    loglevel
+  '/admin_loglevel',
+  strings.commands.admin_loglevel.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_ADMIN,
+  Commands.TYPE_SINGLE,
+  loglevel,
 );

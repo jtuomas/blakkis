@@ -21,7 +21,7 @@
     Contains all errors
 */
 
-const errors = module.exports = {};
+const errors = (module.exports = {});
 
 errors.PrivateCommandUsedInChat = class extends Error {
   constructor(cmd) {

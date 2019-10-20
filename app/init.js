@@ -25,62 +25,60 @@
 'use strict';
 
 module.exports = function(bot) {
+  const Commands = require('./lib/commands.js');
+  const utils = require('./lib/utils.js');
+  const log = require('loglevel');
+  const settings = require('./settings.js');
+  const syslog = log.getLogger('system');
 
-    const Commands = require('./lib/commands.js');
-    const utils = require('./lib/utils.js');
-    const log = require('loglevel');
-    const settings = require('./settings.js');
-    const syslog = log.getLogger('system');
+  // Initialize logging levels
+  log.getLogger('system').setLevel(settings.log_system_level);
+  log.getLogger('db').setLevel(settings.log_db_level);
+  log.getLogger('commands').setLevel(settings.log_commands_level);
 
-    // Initialize logging levels
-    log.getLogger('system').setLevel(settings.log_system_level);
-    log.getLogger('db').setLevel(settings.log_db_level);
-    log.getLogger('commands').setLevel(settings.log_commands_level);
+  syslog.info('Set system log level to ' + settings.log_system_level);
+  syslog.info('Set db log level to ' + settings.log_db_level);
+  syslog.info('Set commands log level to ' + settings.log_commands_level);
 
-    syslog.info('Set system log level to ' + settings.log_system_level);
-    syslog.info('Set db log level to ' + settings.log_db_level);
-    syslog.info('Set commands log level to ' + settings.log_commands_level);
+  syslog.info('Current date and time is ' + new Date().toString());
 
-    syslog.info('Current date and time is ' + new Date().toString());
+  // Initialize message hook to Command framework
+  bot.on('message', msg => {
+    syslog.debug(msg);
 
-    // Initialize message hook to Command framework
-    bot.on('message', (msg) => {
-        syslog.debug(msg);
+    utils.attachMethods(msg, bot);
 
-        utils.attachMethods(msg, bot);
+    Commands.rawCall(msg);
+  });
 
-        Commands.rawCall(msg);
-    });
+  bot.on('callback_query', msg => {
+    syslog.debug(msg);
+    utils.attachMethods(msg, bot);
+    Commands.call('', msg, []);
+  });
 
-    bot.on('callback_query', (msg) => {
-        syslog.debug(msg);
-        utils.attachMethods(msg, bot);
-        Commands.call('', msg, []);
-    });
+  // Enable commands here.
+  require('./commands/about.js');
+  require('./commands/annokset.js');
+  require('./commands/help.js');
+  require('./commands/jalkikellotus.js');
+  require('./commands/juoma.js');
+  require('./commands/kalja033.js');
+  require('./commands/kalja05.js');
+  require('./commands/komennot.js');
+  require('./commands/kuvaaja.js');
+  require('./commands/laatta.js');
+  require('./commands/moro.js');
+  require('./commands/poistu.js');
+  require('./commands/promillet.js');
+  require('./commands/start.js');
+  require('./commands/stats.js');
+  require('./commands/stats2.js');
+  require('./commands/terms.js');
+  require('./commands/tunnus.js');
+  require('./commands/whoami.js');
 
-    // Enable commands here.
-    require('./commands/about.js');
-    require('./commands/annokset.js');
-    require('./commands/help.js');
-    require('./commands/jalkikellotus.js');
-    require('./commands/juoma.js');
-    require('./commands/kalja033.js');
-    require('./commands/kalja05.js');
-    require('./commands/komennot.js');
-    require('./commands/kuvaaja.js');
-    require('./commands/laatta.js');
-    require('./commands/moro.js');
-    require('./commands/poistu.js');
-    require('./commands/promillet.js');
-    require('./commands/start.js');
-    require('./commands/stats.js');
-    require('./commands/stats2.js');
-    require('./commands/terms.js');
-    require('./commands/tunnus.js');
-    require('./commands/whoami.js');
-
-    // Admin commands
-    require('./commands/admin_loglevel.js');
-    require('./commands/admin_stats.js');
-
+  // Admin commands
+  require('./commands/admin_loglevel.js');
+  require('./commands/admin_stats.js');
 };

@@ -32,78 +32,84 @@ const Commands = require('../../app/lib/commands.js');
 const strings = require('../../app/strings.js');
 
 describe('laatta.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
-    it('Calling /laatta should ask for confirmation', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        Commands.call('/laatta', mocked.msg, ['/laatta'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
-                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+  beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+  it('Calling /laatta should ask for confirmation', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = blakkistest.realIds[0];
+    Commands.call('/laatta', mocked.msg, ['/laatta'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
+        assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    it('Calling /laatta should ask for confirmation again if answer is not one of the options', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        Commands.call('/laatta', mocked.msg, ['/laatta'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
-                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                return Commands.call('test', mocked.msg, ['test']);
-            })
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
-                assert.equal(mocked.internals.sentText, strings.commands.laatta.error_text);
-                assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+  it('Calling /laatta should ask for confirmation again if answer is not one of the options', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = blakkistest.realIds[0];
+    Commands.call('/laatta', mocked.msg, ['/laatta'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert.equal(mocked.internals.sentText, strings.commands.laatta.start_text);
+        assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+        return Commands.call('test', mocked.msg, ['test']);
+      })
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.from.id);
+        assert.equal(mocked.internals.sentText, strings.commands.laatta.error_text);
+        assert.notEqual(mocked.internals.sentOptions.reply_markup.keyboard.length, 0);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    it('Calling /laatta should undo if option yes is selected', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const user = blakkistest.users[0];
-        mocked.msg.from.id = blakkistest.realIds[0];
+  it('Calling /laatta should undo if option yes is selected', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const user = blakkistest.users[0];
+    mocked.msg.from.id = blakkistest.realIds[0];
 
-        user.getBooze()
-            .then((rows) => {
-                assert.equal(rows.length, 2);
-                return Commands.call('/laatta', mocked.msg, ['/laatta']);
-            })
-            .then(() => {
-                return Commands.call(strings.commands.laatta.start_answer_yes, mocked.msg, [strings.commands.laatta.start_answer_yes]);
-            }) // yes option)
-            .then(() => user.getBooze())
-            .then((rows) => {
-                assert.equal(rows.length, 1);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+    user
+      .getBooze()
+      .then(rows => {
+        assert.equal(rows.length, 2);
+        return Commands.call('/laatta', mocked.msg, ['/laatta']);
+      })
+      .then(() => {
+        return Commands.call(strings.commands.laatta.start_answer_yes, mocked.msg, [
+          strings.commands.laatta.start_answer_yes,
+        ]);
+      }) // yes option)
+      .then(() => user.getBooze())
+      .then(rows => {
+        assert.equal(rows.length, 1);
+        done();
+      })
+      .catch(err => done(err));
+  });
 
-    it('Calling /laatta should not undo if option no is selected', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        const user = blakkistest.users[0];
-        mocked.msg.from.id = blakkistest.realIds[0];
+  it('Calling /laatta should not undo if option no is selected', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const user = blakkistest.users[0];
+    mocked.msg.from.id = blakkistest.realIds[0];
 
-        user.getBooze()
-            .then((rows) => {
-                assert.equal(rows.length, 2);
-                return Commands.call('/laatta', mocked.msg, ['/laatta']);
-            })
-            .then(() => {
-                return Commands.call(strings.commands.laatta.start_answer_no, mocked.msg, [strings.commands.laatta.start_answer_no]);
-            }) // no option)
-            .then(() => user.getBooze())
-            .then((rows) => {
-                assert.equal(rows.length, 2);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+    user
+      .getBooze()
+      .then(rows => {
+        assert.equal(rows.length, 2);
+        return Commands.call('/laatta', mocked.msg, ['/laatta']);
+      })
+      .then(() => {
+        return Commands.call(strings.commands.laatta.start_answer_no, mocked.msg, [
+          strings.commands.laatta.start_answer_no,
+        ]);
+      }) // no option)
+      .then(() => user.getBooze())
+      .then(rows => {
+        assert.equal(rows.length, 2);
+        done();
+      })
+      .catch(err => done(err));
+  });
 });

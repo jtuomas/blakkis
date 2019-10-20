@@ -32,113 +32,119 @@ const message = require('../lib/message.js');
 const strings = require('../strings.js');
 
 let command = {
-    start: {
-        startMessage: message.PrivateMessage(strings.commands.tunnus.start),
-        validateInput: (context, msg, words) => {
-            let weight = parseInt(words[0], 10);
-            return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
-        },
-        onValidInput: (context, msg, words) => {
-            let username = msg.from.username;
-            if (!username) {
-                username = msg.from.first_name;
-                if (msg.from.last_name) {
-                    username = username + ' ' + msg.from.last_name;
-                }
-            }
-            context.storeVariable('username', username);
-            context.storeVariable('userId', msg.from.id);
+  start: {
+    startMessage: message.PrivateMessage(strings.commands.tunnus.start),
+    validateInput: (context, msg, words) => {
+      let weight = parseInt(words[0], 10);
+      return utils.isValidInt(words[0]) && weight >= 20 && weight <= 250;
+    },
+    onValidInput: (context, msg, words) => {
+      let username = msg.from.username;
+      if (!username) {
+        username = msg.from.first_name;
+        if (msg.from.last_name) {
+          username = username + ' ' + msg.from.last_name;
+        }
+      }
+      context.storeVariable('username', username);
+      context.storeVariable('userId', msg.from.id);
 
-            let weight = parseInt(words[0], 10);
-            context.storeVariable('weight', weight);
-            return Promise.resolve();
-        },
-        nextPhase: 'height',
-        errorMessage: message.PrivateMessage(strings.commands.tunnus.start_error)
+      let weight = parseInt(words[0], 10);
+      context.storeVariable('weight', weight);
+      return Promise.resolve();
     },
-    height: {
-        startMessage: message.PrivateMessage(strings.commands.tunnus.height),
-        validateInput: (context, msg, words) => {
-            let height = parseInt(words[0], 10);
-            return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
-        },
-        onValidInput: (context, msg, words) => {
-            let height = parseInt(words[0], 10);
-            context.storeVariable('height', height);
-            return Promise.resolve();
-        },
-        nextPhase: 'gender',
-        errorMessage: message.PrivateMessage(strings.commands.tunnus.height_error)
+    nextPhase: 'height',
+    errorMessage: message.PrivateMessage(strings.commands.tunnus.start_error),
+  },
+  height: {
+    startMessage: message.PrivateMessage(strings.commands.tunnus.height),
+    validateInput: (context, msg, words) => {
+      let height = parseInt(words[0], 10);
+      return utils.isValidInt(words[0]) && height >= 120 && height <= 240;
     },
-    gender: {
-        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender, [
-            [strings.gender.male, strings.gender.female]
-        ]),
-        validateInput: (context, msg, words) => {
-            let gender = words[0].toLowerCase();
-            return gender === strings.gender.male.toLowerCase() || gender === strings.gender.female.toLowerCase();
-        },
-        onValidInput: (context, msg, words) => {
-            const gender = words[0].toLowerCase();
-            context.storeVariable('gender', gender);
-            return Promise.resolve();
-        },
-        nextPhase: 'terms',
-        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender_error, [
-            [strings.gender.male, strings.gender.female]
-        ])
+    onValidInput: (context, msg, words) => {
+      let height = parseInt(words[0], 10);
+      context.storeVariable('height', height);
+      return Promise.resolve();
     },
-    terms: {
-        startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms.format({
-            terms: strings.commands.terms.reply
-        }), [
-            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
-        ]),
-        validateInput: (context, msg, words) => {
-            let read = words[0].toLowerCase();
-            return read === strings.commands.tunnus.terms_answer_yes.toLowerCase() || read === strings.commands.tunnus.terms_answer_no.toLowerCase();
-        },
-        onValidInput: (context, msg, words) => {
-            let read = words[0].toLowerCase();
-            if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
-                context.end();
-                return context.privateReply(strings.commands.tunnus.terms_on_reject);
-            }
+    nextPhase: 'gender',
+    errorMessage: message.PrivateMessage(strings.commands.tunnus.height_error),
+  },
+  gender: {
+    startMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender, [
+      [strings.gender.male, strings.gender.female],
+    ]),
+    validateInput: (context, msg, words) => {
+      let gender = words[0].toLowerCase();
+      return (
+        gender === strings.gender.male.toLowerCase() ||
+        gender === strings.gender.female.toLowerCase()
+      );
+    },
+    onValidInput: (context, msg, words) => {
+      const gender = words[0].toLowerCase();
+      context.storeVariable('gender', gender);
+      return Promise.resolve();
+    },
+    nextPhase: 'terms',
+    errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.gender_error, [
+      [strings.gender.male, strings.gender.female],
+    ]),
+  },
+  terms: {
+    startMessage: message.PrivateKeyboardMessage(
+      strings.commands.tunnus.terms.format({
+        terms: strings.commands.terms.reply,
+      }),
+      [[strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]],
+    ),
+    validateInput: (context, msg, words) => {
+      let read = words[0].toLowerCase();
+      return (
+        read === strings.commands.tunnus.terms_answer_yes.toLowerCase() ||
+        read === strings.commands.tunnus.terms_answer_no.toLowerCase()
+      );
+    },
+    onValidInput: (context, msg, words) => {
+      let read = words[0].toLowerCase();
+      if (read === strings.commands.tunnus.terms_answer_no.toLowerCase()) {
+        context.end();
+        return context.privateReply(strings.commands.tunnus.terms_on_reject);
+      }
 
-            const userId = context.fetchVariable('userId');
-            const username = context.fetchVariable('username');
-            const weight = context.fetchVariable('weight');
-            const height = context.fetchVariable('height');
-            const gender = context.fetchVariable('gender');
-            return users.find(userId)
-                .then((user) => {
-                    if (user) {
-                        return user.updateInfo(username, weight, gender, height, true)
-                            .then(() => {
-                                return context.privateReply(strings.commands.tunnus.update);
-                            });
-                    } else {
-                        return users.new(userId, username, weight, gender, height, true)
-                            .then((user) => {
-                                return context.privateReply(strings.commands.tunnus.new_user.format({
-                                    username: user.username
-                                }));
-                            });
-                    }
-                });
-        },
-        errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
-            [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no]
-        ])
-    }
+      const userId = context.fetchVariable('userId');
+      const username = context.fetchVariable('username');
+      const weight = context.fetchVariable('weight');
+      const height = context.fetchVariable('height');
+      const gender = context.fetchVariable('gender');
+      return users.find(userId).then(user => {
+        if (user) {
+          return user.updateInfo(username, weight, gender, height, true).then(() => {
+            return context.privateReply(strings.commands.tunnus.update);
+          });
+        } else {
+          return users.new(userId, username, weight, gender, height, true).then(user => {
+            return context.privateReply(
+              strings.commands.tunnus.new_user.format({
+                username: user.username,
+              }),
+            );
+          });
+        }
+      });
+    },
+    errorMessage: message.PrivateKeyboardMessage(strings.commands.tunnus.terms_error, [
+      [strings.commands.tunnus.terms_answer_yes, strings.commands.tunnus.terms_answer_no],
+    ]),
+  },
 };
 
 // Register the command
 Commands.register(
-    '/tunnus',
-    strings.commands.tunnus.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ALL,
-    Commands.TYPE_MULTI,
-    command
+  '/tunnus',
+  strings.commands.tunnus.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_ALL,
+  Commands.TYPE_MULTI,
+  command,
 );

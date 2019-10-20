@@ -26,21 +26,23 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function whoAmI(context, msg, words, user) {
-    return context.privateReply(strings.commands.whoami.reply.format({
-        username: user.username,
-        user_id: user.userId,
-        weight: user.weight,
-        height: user.height,
-        gender: user.gender,
-        created: user.created.toString()
-    }));
+  return context.privateReply(
+    strings.commands.whoami.reply.format({
+      username: user.username,
+      user_id: user.userId,
+      weight: user.weight,
+      height: user.height,
+      gender: user.gender,
+      created: user.created.toString(),
+    }),
+  );
 }
 
 Commands.register(
-    '/whoami',
-    strings.commands.whoami.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_USER,
-    Commands.TYPE_SINGLE,
-    whoAmI
+  '/whoami',
+  strings.commands.whoami.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_USER,
+  Commands.TYPE_SINGLE,
+  whoAmI,
 );

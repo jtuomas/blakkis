@@ -25,20 +25,21 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function poistu(context, msg, words, user) {
-    return user.leaveGroup(msg.chat.id)
-        .then(() => {
-            context.end();
-            return context.chatReply(strings.commands.poistu.leave_text.format({
-                chat_title: msg.chat.title
-            }));
-        });
+  return user.leaveGroup(msg.chat.id).then(() => {
+    context.end();
+    return context.chatReply(
+      strings.commands.poistu.leave_text.format({
+        chat_title: msg.chat.title,
+      }),
+    );
+  });
 }
 
 Commands.register(
-    '/poistu',
-    strings.commands.poistu.cmd_description,
-    Commands.SCOPE_CHAT,
-    Commands.PRIVILEGE_USER,
-    Commands.TYPE_SINGLE,
-    poistu
+  '/poistu',
+  strings.commands.poistu.cmd_description,
+  Commands.SCOPE_CHAT,
+  Commands.PRIVILEGE_USER,
+  Commands.TYPE_SINGLE,
+  poistu,
 );

@@ -26,16 +26,16 @@ const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
 
 function termsCommand(context, msg, words) {
-    return msg.sendPrivateMessage(strings.commands.terms.reply, {
-        'parse_mode': 'Markdown'
-    });
+  return msg.sendPrivateMessage(strings.commands.terms.reply, {
+    parse_mode: 'Markdown',
+  });
 }
 
 Commands.register(
-    '/terms',
-    strings.commands.terms.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_ALL,
-    Commands.TYPE_SINGLE,
-    termsCommand
+  '/terms',
+  strings.commands.terms.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_ALL,
+  Commands.TYPE_SINGLE,
+  termsCommand,
 );

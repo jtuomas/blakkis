@@ -29,79 +29,72 @@ const terms = strings.commands.terms.reply;
 const utils = require('../../lib/utils.js');
 const users = require('../../db/users.js');
 module.exports = {
-    _nonUserRequired: true,
-    _text: str_luo_tunnus.on_select,
-    _headerTitle: str_luo_tunnus.header_title,
-    _onText: (context, user, msg, words) => {
-        const username = users.getUsernameFromMsg(msg);
-        const userId = msg.from.id;
-        let weight = context.fetchVariable('weight');
-        let height = context.fetchVariable('height');
-        let gender = context.fetchVariable('gender');
+  _nonUserRequired: true,
+  _text: str_luo_tunnus.on_select,
+  _headerTitle: str_luo_tunnus.header_title,
+  _onText: (context, user, msg, words) => {
+    const username = users.getUsernameFromMsg(msg);
+    const userId = msg.from.id;
+    let weight = context.fetchVariable('weight');
+    let height = context.fetchVariable('height');
+    let gender = context.fetchVariable('gender');
 
-        context.storeVariable('userId', msg.from.id);
+    context.storeVariable('userId', msg.from.id);
 
-        if (!weight) {
-            weight = parseInt(words[0], 10);
-            if (!utils.isValidInt(weight) || weight < 20 || weight > 250) {
-                return Promise.resolve(str_luo_tunnus.weight_error);
-            }
-            context.storeVariable('weight', weight);
-            return Promise.resolve(str_luo_tunnus.height);
-        }
-
-        if (!height) {
-            height = parseInt(words[0], 10);
-            if (!utils.isValidInt(height) || height < 120 || height > 240) {
-                return Promise.resolve(str_luo_tunnus.height_error);
-            }
-            context.storeVariable('height', height);
-            return Promise.resolve({
-                text: str_luo_tunnus.gender,
-                keyboard: [
-                    [strings.gender.male, strings.gender.female]
-                ]
-            });
-        }
-
-        if (!gender) {
-            gender = words[0];
-            context.storeVariable('gender', gender);
-            return Promise.resolve({
-                text: str_luo_tunnus.terms.format({
-                    terms: terms
-                }),
-                keyboard: [
-                    [strings.yes, strings.no]
-                ]
-            });
-        }
-
-        const terms_answer = words[0];
-        if (terms_answer.toLowerCase() !== strings.yes.toLowerCase()) {
-            return Promise.resolve(str_luo_tunnus.terms_on_reject);
-        }
-        return users.find(userId)
-            .then((user) => {
-                if (user) {
-                    return user.updateInfo(username, weight, gender, height, true)
-                        .then(() => {
-                            return str_luo_tunnus.update;
-                        });
-                } else {
-                    return users.new(userId, username, weight, gender, height, true)
-                        .then((user) => {
-                            return str_luo_tunnus.new_user.format({
-                                username: user.username
-                            });
-                        });
-                }
-            });
-    },
-    _onExit: (context, user) => {
-        context.forgetVariable('weight');
-        context.forgetVariable('height');
-        context.forgetVariable('gender');
-        context.forgetVariable('userId');
+    if (!weight) {
+      weight = parseInt(words[0], 10);
+      if (!utils.isValidInt(weight) || weight < 20 || weight > 250) {
+        return Promise.resolve(str_luo_tunnus.weight_error);
+      }
+      context.storeVariable('weight', weight);
+      return Promise.resolve(str_luo_tunnus.height);
     }
+
+    if (!height) {
+      height = parseInt(words[0], 10);
+      if (!utils.isValidInt(height) || height < 120 || height > 240) {
+        return Promise.resolve(str_luo_tunnus.height_error);
+      }
+      context.storeVariable('height', height);
+      return Promise.resolve({
+        text: str_luo_tunnus.gender,
+        keyboard: [[strings.gender.male, strings.gender.female]],
+      });
+    }
+
+    if (!gender) {
+      gender = words[0];
+      context.storeVariable('gender', gender);
+      return Promise.resolve({
+        text: str_luo_tunnus.terms.format({
+          terms: terms,
+        }),
+        keyboard: [[strings.yes, strings.no]],
+      });
+    }
+
+    const terms_answer = words[0];
+    if (terms_answer.toLowerCase() !== strings.yes.toLowerCase()) {
+      return Promise.resolve(str_luo_tunnus.terms_on_reject);
+    }
+    return users.find(userId).then(user => {
+      if (user) {
+        return user.updateInfo(username, weight, gender, height, true).then(() => {
+          return str_luo_tunnus.update;
+        });
+      } else {
+        return users.new(userId, username, weight, gender, height, true).then(user => {
+          return str_luo_tunnus.new_user.format({
+            username: user.username,
+          });
+        });
+      }
+    });
+  },
+  _onExit: (context, user) => {
+    context.forgetVariable('weight');
+    context.forgetVariable('height');
+    context.forgetVariable('gender');
+    context.forgetVariable('userId');
+  },
 };

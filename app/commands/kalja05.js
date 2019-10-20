@@ -27,24 +27,26 @@ const constants = require('../constants.js');
 const strings = require('../strings.js');
 
 function kalja05Command(context, msg, words, user) {
-    return user.drinkBoozeReturnEBAC(constants.KALJA05, '/kalja05', msg)
-        .then((ebac) => {
-            const permilles = ebac.permilles;
-            const permilles30Min = ebac.permilles30Min;
-            const text = utils.getRandomFromArray(strings.drink_responses) + '\n\n' + strings.short_permilles_text.format({
-                permilles: utils.roundTo(permilles, 2),
-                permilles30Min: utils.roundTo(permilles30Min, 2)
-            });
-            context.end();
-            return context.privateReply(text);
-        });
+  return user.drinkBoozeReturnEBAC(constants.KALJA05, '/kalja05', msg).then(ebac => {
+    const permilles = ebac.permilles;
+    const permilles30Min = ebac.permilles30Min;
+    const text =
+      utils.getRandomFromArray(strings.drink_responses) +
+      '\n\n' +
+      strings.short_permilles_text.format({
+        permilles: utils.roundTo(permilles, 2),
+        permilles30Min: utils.roundTo(permilles30Min, 2),
+      });
+    context.end();
+    return context.privateReply(text);
+  });
 }
 
 Commands.register(
-    '/kalja05',
-    strings.commands.kalja05.cmd_description,
-    Commands.SCOPE_PRIVATE,
-    Commands.PRIVILEGE_USER,
-    Commands.TYPE_SINGLE,
-    kalja05Command
+  '/kalja05',
+  strings.commands.kalja05.cmd_description,
+  Commands.SCOPE_PRIVATE,
+  Commands.PRIVILEGE_USER,
+  Commands.TYPE_SINGLE,
+  kalja05Command,
 );

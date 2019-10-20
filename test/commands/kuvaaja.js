@@ -31,18 +31,18 @@ const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
 
 describe('kuvaaja.js', function() {
-    beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
-    it('Calling /kuvaaja should sent a photo to the group', function(done) {
-        const mocked = blakkistest.mockMsgAndBot();
-        mocked.msg.from.id = blakkistest.realIds[0];
-        mocked.msg.chat.type = 'chat';
-        mocked.msg.chat.id = blakkistest.groups[0].realId;
-        Commands.call('/kuvaaja', mocked.msg, ['/kuvaaja'])
-            .then(() => {
-                assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
-                assert.notEqual(mocked.internals.sentStream, false);
-                done();
-            })
-            .catch((err) => done(err));
-    });
+  beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
+  it('Calling /kuvaaja should sent a photo to the group', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = blakkistest.realIds[0];
+    mocked.msg.chat.type = 'chat';
+    mocked.msg.chat.id = blakkistest.groups[0].realId;
+    Commands.call('/kuvaaja', mocked.msg, ['/kuvaaja'])
+      .then(() => {
+        assert.equal(mocked.internals.sentChatId, mocked.msg.chat.id);
+        assert.notEqual(mocked.internals.sentStream, false);
+        done();
+      })
+      .catch(err => done(err));
+  });
 });
