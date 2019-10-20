@@ -23,62 +23,57 @@
 
 'use strict';
 
-const ChartjsNode = require('chartjs-node');
+const { CanvasRenderService } = require('chartjs-node-canvas');
 const log = require('loglevel').getLogger('system');
 
-const linechart = module.exports = {};
+const linechart = (module.exports = {});
 
 const lineChartTemplate = {
-    type: 'line',
-    data: {
-        labels: [],
-        datasets: []
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: [],
+  },
+  options: {
+    elements: {
+      line: {
+        tension: 0.4,
+      },
     },
-    options: {
-        elements: {
-            line: {
-                tension: 0.4
-            }
-        },
-        title: {
+    title: {
+      display: true,
+      text: 'Chart.js Line Chart',
+    },
+    scales: {
+      xAxes: [
+        {
+          display: true,
+          scaleLabel: {
             display: true,
-            text: 'Chart.js Line Chart'
+            labelString: 'Aika',
+          },
         },
-        scales: {
-            xAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Aika'
-                }
-            }],
-            yAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Promillet'
-                }
-            }]
-        }
-    }
+      ],
+      yAxes: [
+        {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Promillet',
+          },
+        },
+      ],
+    },
+  },
 };
 
 linechart.getLineGraphBuffer = function(data, title) {
-    log.debug('Trying to make a line chart from data');
-    var chartNode = new ChartjsNode(1024, 728);
-    var lineChartConfig = lineChartTemplate;
+  log.debug('Trying to make a line chart from data');
+  var canvasRenderService = new CanvasRenderService(1024, 728);
+  var lineChartConfig = lineChartTemplate;
 
-    lineChartConfig.data = data;
-    lineChartConfig.options.title.text = title;
+  lineChartConfig.data = data;
+  lineChartConfig.options.title.text = title;
 
-    return chartNode.drawChart(lineChartConfig)
-        .then(() => {
-            let buffer = chartNode.getImageBuffer('image/png');
-            log.debug('Drawing line chart succeeded');
-            return Promise.resolve(buffer);
-        }).catch((err) => {
-            log.error('Error writing PNG to buffer:');
-            log.error(err);
-            return Promise.reject(err);
-        });
+  return canvasRenderService.renderToBuffer(lineChartConfig);
 };
