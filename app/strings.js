@@ -93,7 +93,7 @@ strings.commands = {
     use_only_in_chats: 'Käytä komentoa vain chateissa!',
     command_not_found: 'Mitä? Jos kaipaat apua käyttämiseen, kirjoita /help',
     command_error: 'Virhe! Komennon käyttöohje: {cmd_help}',
-    error: 'Vakava virhe! Ota yhteyttä @ultsi, niin minut saadaan korjattua.',
+    error: 'Vakava virhe! Aloita komento alusta, niin yleensä poistuu sillä.',
     on_cmd_register:
       'Registered command {name}, scope: {scope}, privilege: {privilege}, type: {type}, definition: {definition}',
     back: '« Takaisin',
@@ -323,7 +323,7 @@ strings.commands = {
           button_text: 'Koodi',
           header_title: 'FAQ: Koodi',
           on_select:
-            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://github.com/ultsi/blakkisvuohi.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nTällä hetkellä kehittäjänä toimii @ultsi, jolle voi laittaa suoraan privaviestiä. Issuen lisääminen githubiin toimii kanssa. https://github.com/ultsi/blakkisvuohi/issues\n\n*Saako Bläkkisvuohen koodaamisesta rahaa?*\nItseasiassa, saa. Futuricen työntekijänä @ultsi saa avoimen lähdekoodin projektien tekemisestä korvausta 'Spice Program'-ohjelman mukaan. (https://spiceprogram.org/)",
+            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://gitlab.com/ultsi-projects/blakkisvuohi.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nTällä hetkellä kehittäjänä toimii @ultsi, jolle voi laittaa suoraan privaviestiä. Issuen lisääminen gitlabiin toimii kanssa. https://gitlab.com/ultsi-projects/blakkisvuohi/-/issues\n\n",
         },
       },
       privacy: {
