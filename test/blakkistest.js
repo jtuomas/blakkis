@@ -84,6 +84,7 @@ blakkistest.mockMsgAndBot = () => {
       sentText: false,
       sentOptions: false,
       sentStream: false,
+      sentDocuments: [],
       editText: false,
       editOptions: false,
     },
@@ -102,6 +103,15 @@ blakkistest.mockMsgAndBot = () => {
       mock.internals.sentChatId = chatId;
       mock.internals.sentStream = stream;
       mock.internals.sentOptions = options;
+      return Promise.resolve();
+    },
+    sendDocument: (chatId, buffer, options, fileOptions) => {
+      mock.internals.sentDocuments.push({
+        chatId: chatId,
+        filename: fileOptions.filename,
+        contentType: fileOptions.contentType,
+        text: buffer.toString(),
+      });
       return Promise.resolve();
     },
     editMessageText: (text, options) => {

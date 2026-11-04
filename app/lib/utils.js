@@ -98,6 +98,22 @@ function createSendPhotoFunction(msg, bot) {
   };
 }
 
+function createSendDocumentFunction(msg, bot) {
+  return function(chatId, buffer, options, fileOptions) {
+    return bot
+      .sendDocument(chatId, buffer, options, fileOptions)
+      .then(() => {
+        log.debug('sent document to chat ' + chatId);
+        return Promise.resolve();
+      })
+      .catch(err => {
+        log.error("couldn't send document! Err: " + err);
+        log.debug(err.stack);
+        return Promise.reject(err);
+      });
+  };
+}
+
 function createEditMessageTextFunction(msg, bot) {
   return function(text, options) {
     return bot
@@ -151,6 +167,7 @@ utils.attachMethods = function attachMethods(msg, bot) {
   msg.sendChatMessage = createSendChatMsgFunction(msg, bot);
   msg.sendMessage = createSendMsgToFunction(msg, bot);
   msg.sendPhoto = createSendPhotoFunction(msg, bot);
+  msg.sendDocument = createSendDocumentFunction(msg, bot);
   msg.editMessageText = createEditMessageTextFunction(msg, bot);
 };
 
@@ -261,6 +278,27 @@ utils.groupDrinksByUser = drinks => {
     drinksByUser[drink.userid].drinks.push(drink);
   }
   return drinksByUser;
+};
+
+function toCsvCell(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  let cell = value instanceof Date ? value.toISOString() : '' + value;
+  // Stop spreadsheet programs from running user-entered text as a formula
+  if (typeof value === 'string' && /^[=+\-@\t\r]/.test(cell)) {
+    cell = "'" + cell;
+  }
+  return /[",\r\n]/.test(cell) ? '"' + cell.replace(/"/g, '""') + '"' : cell;
+}
+
+/*
+    Forms an RFC 4180 CSV string. The leading byte order mark
+    makes Excel read the file as UTF-8, so that ä and ö stay intact.
+*/
+utils.toCsv = (columns, rows) => {
+  const lines = [columns].concat(rows.map(row => columns.map(column => row[column])));
+  return '﻿' + lines.map(line => line.map(toCsvCell).join(',') + '\r\n').join('');
 };
 
 /*
