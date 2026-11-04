@@ -126,6 +126,10 @@ contexts.Context = class {
     });
   }
 
+  privateDocumentReply(buffer, filename, contentType) {
+    return this.msg.sendDocument(this.msg.from.id, buffer, {}, { filename, contentType });
+  }
+
   sendMessageObj(message) {
     if (!message || !message.type || !message.text) {
       return Promise.reject(new Error('invalid message object'));

@@ -127,6 +127,13 @@ strings.commands = {
     text_group_list_item: '{username}... {standard_drinks}kpl ({drinks12h}/{drinks24h})',
   },
 
+  /* /data */
+  data: {
+    cmd_description: '/data - lataa omat tiedot talteen.',
+    reply: 'Tässä kaikki sinun käyttäjätunnukseen liitetyt tiedot.',
+    no_data: 'Sinun käyttäjätunnuksella ei ole tallennettu yhtään tietoa.',
+  },
+
   start: {
     on_select:
       'Veressäsi on {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Olet selvinpäin {hours}h {minutes}min päästä.{drink_list}',

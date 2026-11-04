@@ -60,6 +60,7 @@ module.exports = function(bot) {
   // Enable commands here.
   require('./commands/about.js');
   require('./commands/annokset.js');
+  require('./commands/data.js');
   require('./commands/help.js');
   require('./commands/jalkikellotus.js');
   require('./commands/juoma.js');

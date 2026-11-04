@@ -354,6 +354,32 @@ users.find = userId => {
     });
 };
 
+/*
+    Everything stored about a user, one entry per table. Selects all columns so
+    that columns added later are exported too. Queries by id instead of the users
+    row, so drinks and groups are included even if that row is missing.
+*/
+users.getAllData = userId => {
+  const params = [utils.hashSha256(userId)];
+  return Promise.all([
+    pool.query('select * from users where userId=$1', params),
+    pool.query('select * from users_drinks where userId=$1 order by created asc', params),
+    pool.query('select * from users_in_groups where userId=$1', params),
+  ]).then(res => {
+    const toTable = queryRes => ({
+      columns: queryRes.fields.map(field => field.name),
+      rows: queryRes.rows,
+    });
+    const user = toTable(res[0]);
+    user.rows = user.rows.map(row => Object.assign({}, row, { nick: utils.decrypt(row.nick) }));
+    return {
+      user: user,
+      drinks: toTable(res[1]),
+      groups: toTable(res[2]),
+    };
+  });
+};
+
 users.getUsernameFromMsg = msg => {
   let username = msg.from.username;
   if (!username) {
