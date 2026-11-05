@@ -1,0 +1,17 @@
+{
+  "files.exclude": {
+    "**/node_modules": true
+  },
+  "search.exclude": {
+    "static": true,
+    "**/node_modules": true
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.validate": ["javascript", "typescript"]
+}

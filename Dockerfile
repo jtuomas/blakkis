@@ -10,5 +10,6 @@ RUN echo "Europe/Helsinki" > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
 
 COPY . .
+RUN tsc -p .
 
-CMD ["node", "index.js"]
+CMD ["node", "dist/index.js"]
