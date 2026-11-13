@@ -29,8 +29,6 @@ const groups = require('../db/groups.js');
 const linechart = require('../lib/linechart.js');
 const strings = require('../strings.js');
 
-const lastNHours = 24;
-const predictNHours = 12;
 // The legend has to fit next to the chart, so this many people at most
 const maxLines = 60;
 
@@ -40,7 +38,11 @@ const markerEveryOtherHour = point => (point.dataIndex % 2 === 0 ? 5 : 0);
 // the highest peak first. Each user has their own combination of a color and a marker shape,
 // a solid line for the past and a dashed line for the prediction in the same color and shape.
 function buildChartData(drinksByUser) {
-  const { rows, nowIndex } = chartdata.getRows(drinksByUser, lastNHours, predictNHours);
+  const { rows, nowIndex } = chartdata.getRows(
+    drinksByUser,
+    chartdata.lastNHours,
+    chartdata.predictNHours,
+  );
   const shown = rows.slice(0, maxLines);
   const datasets = [];
   shown.forEach((row, i) => {

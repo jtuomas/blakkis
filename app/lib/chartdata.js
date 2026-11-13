@@ -29,6 +29,10 @@ const users = require('../db/users.js');
 
 const chartdata = (module.exports = {});
 
+// The charts show this many hours back from now and forecast this many forward
+chartdata.lastNHours = 24;
+chartdata.predictNHours = 12;
+
 const pad2 = number => ('0' + number).slice(-2);
 
 chartdata.formatTime = time => pad2(time.getHours()) + ':' + pad2(time.getMinutes());
