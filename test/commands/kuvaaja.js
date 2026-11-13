@@ -45,22 +45,40 @@ function drinker(userid, nick, drinkHoursAgo) {
 }
 
 describe('kuvaaja.buildChartData()', function() {
+  const named = data => data.datasets.filter(dataset => dataset.label !== '');
+
+  function drinkers(count) {
+    const byUser = {};
+    for (let i = 0; i < count; i += 1) {
+      byUser['u' + i] = drinker('u' + i, 'Juoja' + i, [1]);
+    }
+    return byUser;
+  }
+
   it('should give every drinker their own color', function() {
     const data = kuvaaja.buildChartData({
       a: drinker('a', 'Eka', [1]),
       b: drinker('b', 'Toka', [2]),
       c: drinker('c', 'Kolmas', [1, 0.5]),
     });
-    const named = data.datasets.filter(dataset => dataset.label !== '');
-    assert.deepEqual(named.map(dataset => dataset.label), ['Eka', 'Toka', 'Kolmas']);
-    assert.equal(new Set(named.map(dataset => dataset.borderColor)).size, 3);
+    assert.deepEqual(named(data).map(dataset => dataset.label).sort(), ['Eka', 'Kolmas', 'Toka']);
+    assert.equal(new Set(named(data).map(dataset => dataset.borderColor)).size, 3);
   });
 
-  it('should draw the prediction in the same color without a legend label', function() {
+  it('should list the drinker with the highest peak first', function() {
+    const data = kuvaaja.buildChartData({
+      a: drinker('a', 'Eka', [1]),
+      b: drinker('b', 'Kolmas', [1, 0.5, 0.2]),
+    });
+    assert.equal(named(data)[0].label, 'Kolmas');
+  });
+
+  it('should draw the prediction in the same color and shape without a legend label', function() {
     const data = kuvaaja.buildChartData({ a: drinker('a', 'Eka', [1]) });
     assert.equal(data.datasets.length, 2);
     assert.equal(data.datasets[1].label, '');
     assert.equal(data.datasets[1].borderColor, data.datasets[0].borderColor);
+    assert.equal(data.datasets[1].pointStyle, data.datasets[0].pointStyle);
   });
 
   it('should leave out users with no alcohol in the time window', function() {
@@ -68,7 +86,32 @@ describe('kuvaaja.buildChartData()', function() {
       a: drinker('a', 'Eka', [1]),
       b: drinker('b', 'Selvä', [47]),
     });
-    assert.deepEqual(data.datasets.filter(d => d.label !== '').map(d => d.label), ['Eka']);
+    assert.deepEqual(named(data).map(d => d.label), ['Eka']);
+  });
+
+  it('should use a new marker shape when the colors have run out', function() {
+    const lines = named(kuvaaja.buildChartData(drinkers(13)));
+    assert.equal(lines.length, 13);
+    assert.equal(lines[12].borderColor, lines[0].borderColor);
+    assert.notEqual(lines[12].pointStyle, lines[0].pointStyle);
+    const combinations = lines.map(line => line.borderColor + line.pointStyle);
+    assert.equal(new Set(combinations).size, 13);
+  });
+
+  it('should label the hours as HH:mm and start an hour before the first drink', function() {
+    const data = kuvaaja.buildChartData({ a: drinker('a', 'Eka', [2]) });
+    assert(data.labels.every(label => /^\d\d:\d\d$/.test(label)));
+    // 24 hours back and 12 forward would be 37 hours
+    assert(data.labels.length > 12 && data.labels.length < 20, data.labels.length);
+    // the prediction runs to the end of the chart, the past stops at the last full hour
+    assert.equal(data.datasets[1].data.length, data.labels.length);
+    assert(data.datasets[0].data.length < data.labels.length);
+  });
+
+  it('should show at most 60 people and tell how many there were', function() {
+    const data = kuvaaja.buildChartData(drinkers(65));
+    assert.equal(named(data).length, 60);
+    assert.equal(data.totalCount, 65);
   });
 });
 

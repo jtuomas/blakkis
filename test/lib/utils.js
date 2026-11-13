@@ -251,6 +251,26 @@ describe('utils', function() {
     });
   });
 
+  describe('getChartShape()', function() {
+    it('should change the shape every time the colors have run out', function() {
+      const count = utils.getColorSet().length;
+      assert.equal(utils.getChartShape(0), 'circle');
+      assert.equal(utils.getChartShape(count - 1), 'circle');
+      assert.equal(utils.getChartShape(count), 'triangle');
+      assert.equal(utils.getChartShape(2 * count), 'rect');
+    });
+
+    it('should give every one of the 72 first lines its own color and shape', function() {
+      const combinations = new Set();
+      for (let i = 0; i < 72; i += 1) {
+        combinations.add(utils.getChartColor(i) + utils.getChartShape(i));
+      }
+      assert.equal(combinations.size, 72);
+      // and start over after that
+      assert.equal(utils.getChartShape(72), utils.getChartShape(0));
+    });
+  });
+
   describe('hashId()', function() {
     it('should be a keyed hash on top of the plain sha256', function() {
       const hashed = utils.hashId(12345);

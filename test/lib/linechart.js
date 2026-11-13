@@ -45,6 +45,23 @@ describe('linegraph.js', function() {
         });
     });
 
+    it('should make the image taller when there are more people in the legend', function() {
+      const people = count => ({
+        labels: ['00:00', '01:00'],
+        datasets: Array.from({ length: count }, (_, i) => ({ label: 'Juoja' + i, data: [0, i] })),
+      });
+      const size = buffer => ({ width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) });
+      return Promise.all([
+        linechart.getLineGraphBuffer(people(5), ''),
+        linechart.getLineGraphBuffer(people(50), ''),
+      ]).then(buffers => {
+        const few = size(buffers[0]);
+        const many = size(buffers[1]);
+        assert.equal(few.width, many.width);
+        assert(many.height > few.height, few.height + ' ' + many.height);
+      });
+    });
+
     it('should return a png buffer with some data and text', function(done) {
       linechart
         .getLineGraphBuffer([1, 2, 3, 4, 5, 6], 'test text')

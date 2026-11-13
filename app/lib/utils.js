@@ -215,23 +215,29 @@ utils.toNumber = function(num) {
 };
 
 /*
-    Line colors for charts, in the order they are handed out. All are clearly
-    distinguishable from each other and readable on a white background.
+    Line colors for charts, in the order they are handed out. The order was picked with the color
+    blindness check of the dataviz guide: lines next to each other in the list (people with a
+    similar level, so lines that run close together) stay easy to tell apart also for red-green
+    color blind readers. Past the 12th person the colors start again with the next marker shape,
+    see getChartShape(), so everyone has their own combination (12 colors x 6 shapes = 72).
 */
 const chartPalette = [
-  '#1f77b4', // blue
-  '#d62728', // red
-  '#2ca02c', // green
-  '#ff7f0e', // orange
-  '#9467bd', // purple
-  '#17becf', // cyan
-  '#e377c2', // pink
-  '#8c564b', // brown
-  '#bcbd22', // olive
-  '#000000', // black
-  '#393b79', // navy
-  '#7f7f7f', // gray
+  '#2a78d6', // blue
+  '#e34948', // red
+  '#47b7f1', // sky blue
+  '#a32384', // plum
+  '#1baf7a', // aqua green
+  '#6250d6', // violet
+  '#e87ba4', // pink
+  '#008300', // green
+  '#cc4da9', // magenta
+  '#eda100', // yellow
+  '#9884f3', // lavender
+  '#eb6834', // orange
 ];
+
+// Chart.js point styles
+const chartShapes = ['circle', 'triangle', 'rect', 'rectRot', 'cross', 'star'];
 
 utils.getColorSet = function() {
   return [].concat(chartPalette); // return a copy
@@ -240,6 +246,11 @@ utils.getColorSet = function() {
 // Color for the nth line of a chart; wraps around if there are more lines than colors
 utils.getChartColor = function(n) {
   return chartPalette[n % chartPalette.length];
+};
+
+// Marker shape of the nth line of a chart, changes every time the colors have run out
+utils.getChartShape = function(n) {
+  return chartShapes[Math.floor(n / chartPalette.length) % chartShapes.length];
 };
 
 // Secret that Telegram sends back with every webhook request, derived so that

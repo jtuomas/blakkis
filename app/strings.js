@@ -400,6 +400,7 @@ strings.commands = {
   kuvaaja: {
     cmd_description: '/kuvaaja - Näyttää ryhmän 24h tapahtumat kuvaajana.',
     graph_title: 'Promillekuvaaja feat. {chat_title}',
+    graph_title_truncated: '{graph_title}\nNäytetään {shown} suurinta {total} henkilöstä.',
     img_failed: 'Kuvan muodostus epäonnistui!',
   },
 

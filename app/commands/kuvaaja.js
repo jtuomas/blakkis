@@ -23,73 +23,58 @@
 
 const log = require('loglevel').getLogger('commands');
 const Commands = require('../lib/commands.js');
-const alcomath = require('../lib/alcomath.js');
+const chartdata = require('../lib/chartdata.js');
 const utils = require('../lib/utils.js');
 const groups = require('../db/groups.js');
-const users = require('../db/users.js');
 const linechart = require('../lib/linechart.js');
 const strings = require('../strings.js');
 
 const lastNHours = 24;
 const predictNHours = 12;
+// The legend has to fit next to the chart, so this many people at most
+const maxLines = 60;
 
-// Build Chart.js data with one colored line per user who has had alcohol in the
-// chart's time window. Each user gets a solid line for the past and a dashed
-// line for the prediction in the same color.
+const markerEveryOtherHour = point => (point.dataIndex % 2 === 0 ? 5 : 0);
+
+// Build Chart.js data with one line per user who has had alcohol in the chart's time window,
+// the highest peak first. Each user has their own combination of a color and a marker shape,
+// a solid line for the past and a dashed line for the prediction in the same color and shape.
 function buildChartData(drinksByUser) {
-  const labels = [];
+  const { rows, nowIndex } = chartdata.getRows(drinksByUser, lastNHours, predictNHours);
+  const shown = rows.slice(0, maxLines);
   const datasets = [];
-  for (let userId in drinksByUser) {
-    const details = drinksByUser[userId];
-    const user = new users.User(
-      details.userid,
-      details.nick,
-      details.weight,
-      details.gender,
-      details.height,
-    );
-    const permillesByHour = alcomath.calculateEBACByHourFromDrinks(
-      user,
-      details.drinks,
-      lastNHours,
-      predictNHours,
-    );
-    if (!permillesByHour.some(hour => hour.permilles > 0)) {
-      continue;
-    }
-
-    const permillesLastNHours = [];
-    const permillesPredictNHours = [];
-    for (let i = 0; i < permillesByHour.length; i += 1) {
-      if (labels.length < permillesByHour.length) {
-        labels.push(permillesByHour[i].hour);
-      }
-      if (i <= lastNHours) {
-        permillesLastNHours[i] = permillesByHour[i].permilles;
-      }
-      if (i >= lastNHours) {
-        permillesPredictNHours[i] = permillesByHour[i].permilles;
-      }
-    }
-
-    const color = utils.getChartColor(datasets.length / 2);
-    datasets.push({
-      label: details.nick,
-      data: permillesLastNHours,
+  shown.forEach((row, i) => {
+    const color = utils.getChartColor(i);
+    const style = {
       fill: false,
       backgroundColor: color,
       borderColor: color,
+      borderWidth: 2,
+      pointStyle: utils.getChartShape(i),
+      pointBackgroundColor: color,
+      pointBorderColor: color,
+      pointBorderWidth: 2,
+      pointRadius: markerEveryOtherHour,
+    };
+    const past = [];
+    const future = [];
+    row.values.forEach((permilles, hour) => {
+      if (hour <= nowIndex) {
+        past[hour] = permilles;
+      }
+      if (hour >= nowIndex) {
+        future[hour] = permilles;
+      }
     });
-    datasets.push({
-      label: '', // hidden from the legend, the solid line already names the user
-      data: permillesPredictNHours,
-      fill: false,
-      backgroundColor: color,
-      borderColor: color,
-      borderDash: [5, 15],
-    });
-  }
-  return { labels: labels, datasets: datasets };
+    datasets.push(Object.assign({ label: row.nick, data: past }, style));
+    // No label so that it is hidden from the legend, the solid line already names the user
+    datasets.push(Object.assign({ label: '', data: future, borderDash: [6, 6] }, style));
+  });
+  return {
+    labels: shown.length > 0 ? shown[0].series.map(hour => chartdata.formatTime(hour.time)) : [],
+    datasets: datasets,
+    totalCount: rows.length,
+  };
 }
 
 function kuvaaja(context, msg, words, user) {
@@ -105,9 +90,20 @@ function kuvaaja(context, msg, words, user) {
     ? user.getDrinkTimesByUser()
     : group.getDrinkTimesByUser();
 
-  return drinkTimes
-    .then(drinksByUser => linechart.getLineGraphBuffer(buildChartData(drinksByUser), graphTitle))
-    .then(buffer => context.photoReply(buffer, graphTitle));
+  return drinkTimes.then(drinksByUser => {
+    const chartData = buildChartData(drinksByUser);
+    const caption =
+      chartData.totalCount > maxLines
+        ? strings.commands.kuvaaja.graph_title_truncated.format({
+            graph_title: graphTitle,
+            shown: maxLines,
+            total: chartData.totalCount,
+          })
+        : graphTitle;
+    return linechart
+      .getLineGraphBuffer(chartData, graphTitle)
+      .then(buffer => context.photoReply(buffer, caption));
+  });
 }
 
 Commands.register(
