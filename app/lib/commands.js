@@ -105,6 +105,11 @@ function retrieveContext(userId, msg) {
   return false;
 }
 
+// Only the command is safe to log, the rest of a message is the user's own content
+function commandOf(msg) {
+  return (msg.text || '').split(/\s+/)[0];
+}
+
 function sendErrorMessage(msg, err) {
   switch (err.constructor) {
     case errors.PrivateCommandUsedInChat:
@@ -122,12 +127,12 @@ function sendErrorMessage(msg, err) {
     default:
       log.error('!!!Unknown error!!!');
       log.error(err);
-      log.error(msg);
+      log.error('command: ' + commandOf(msg) + ', chat type: ' + (msg.chat && msg.chat.type));
       log.error('!!!Unknown error!!!');
       return (settings.admin_id !== null
         ? msg.sendMessage(
             settings.admin_id,
-            `Unknown error ${err.message} upon user ${msg.from.username} sending msg ${msg.text}`,
+            `Unknown error ${err.message} upon command ${commandOf(msg)}`,
           )
         : Promise.resolve()
       )
@@ -213,7 +218,7 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
 
   return utils
     .hookNewRelic('command/' + cmd.name, function() {
-      log.debug((msg.from.username || msg.from.first_name) + ': ' + firstWord);
+      log.debug('command: ' + firstWord);
       if (cmd.scope === Commands.SCOPE_PRIVATE && !context.isPrivateChat()) {
         if (bot_suffix) {
           return Promise.reject(new errors.PrivateCommandUsedInChat(cmd.name));

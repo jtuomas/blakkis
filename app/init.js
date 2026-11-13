@@ -44,7 +44,7 @@ module.exports = function(bot) {
 
   // Initialize message hook to Command framework
   bot.on('message', msg => {
-    syslog.debug(msg);
+    syslog.debug('message in a ' + msg.chat.type + ' chat');
 
     utils.attachMethods(msg, bot);
 
@@ -52,7 +52,7 @@ module.exports = function(bot) {
   });
 
   bot.on('callback_query', msg => {
-    syslog.debug(msg);
+    syslog.debug('callback query');
     utils.attachMethods(msg, bot);
     Commands.call('', msg, []);
   });

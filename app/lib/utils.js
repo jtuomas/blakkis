@@ -39,7 +39,7 @@ function createSendPrivateMsgFunction(msg, bot) {
     return bot
       .sendMessage(msg.from.id, text)
       .then(() => {
-        log.debug('sent ' + text + ' to ' + msg.from.username);
+        log.debug('sent a private message');
         return Promise.resolve();
       })
       .catch(err => {

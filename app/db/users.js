@@ -299,15 +299,13 @@ users.new = (userId, nick, weight, gender, height, read_terms) => {
     announcements.length,
   ];
 
-  log.debug('Creating user... params:');
-  log.debug(params);
   return pool
     .query(
       'insert into users (userId, nick, weight, gender, height, read_terms, read_announcements) values ($1, $2, $3, $4, $5, $6, $7)',
       params,
     )
     .then(() => {
-      console.log('created new user ' + nick);
+      log.info('created new user');
       return new User(
         params[0],
         utils.decrypt(params[1]),
