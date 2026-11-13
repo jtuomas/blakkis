@@ -254,6 +254,31 @@ utils.webhookSecret = function() {
     .digest('hex');
 };
 
+// Telegram ids are guessable, so the ids stored in the database are keyed with SECRET.
+// The key is applied on top of the plain sha256 that was stored before it was introduced,
+// which lets the old rows be converted without knowing the original ids.
+let idKey;
+function getIdKey() {
+  if (!idKey) {
+    if (!_secret_) {
+      throw new Error('SECRET is not set');
+    }
+    idKey = crypto.scryptSync(_secret_, 'blakkisvuohi-id', 32);
+  }
+  return idKey;
+}
+
+utils.rehashId = function(sha256Hex) {
+  return crypto
+    .createHmac('sha256', getIdKey())
+    .update(sha256Hex)
+    .digest('hex');
+};
+
+utils.hashId = function(id) {
+  return utils.rehashId(utils.hashSha256(id));
+};
+
 utils.hashSha256 = function(data) {
   const hash = crypto.createHash('sha256');
   hash.update('' + data); // tostring

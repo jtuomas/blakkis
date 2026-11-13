@@ -35,7 +35,7 @@ const users = require('./users.js');
 let groups = (module.exports = {});
 
 function Group(groupId) {
-  this.groupId = utils.hashSha256(groupId);
+  this.groupId = utils.hashId(groupId);
 }
 
 groups.Group = Group;

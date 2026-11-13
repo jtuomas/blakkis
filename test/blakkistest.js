@@ -41,7 +41,7 @@ blakkistest.realIds = [];
 blakkistest.users = blakkistest.users.map((_, i) => {
   const id = 100 + i;
   const user = new users.User(
-    utils.hashSha256(id),
+    utils.hashId(id),
     i + '',
     80 + i,
     'mies',

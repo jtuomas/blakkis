@@ -50,7 +50,7 @@ Set the next env variables:
 - `DATABASE_URL` = your database url
 - `NODE_ENV` = 'production'
 - `BOT_MODE` = 'webhook'
-- `SECRET` = a long random string, used to encrypt user data. Keep it, it cannot be changed later
+- `SECRET` = a long random string, used to encrypt and hash user data. Keep it, it cannot be changed later
 - `ADMIN_ID` = your Telegram user id
 - `BOT_USERNAME` = the bot's username without @
 
@@ -59,7 +59,13 @@ Bot runs automatically when pushed to the Heroku remote. The Heroku setup has no
 ## Database upgrades
 
 `app/schema.sql` creates the tables for a new database. Existing databases are upgraded by the bot
-itself on startup (`app/db/maintenance.js`), so there are no separate migrations to run.
+itself on startup (`app/db/maintenance.js`), so there are no separate migrations to run. The bot does
+not start handling messages until the upgrade has succeeded, and exits if it fails.
+
+Telegram user and group ids are stored only as hashes keyed with `SECRET`. The first start after
+this was introduced converts the existing plain sha256 ids in one transaction and records it in the
+`schema_meta` table. Take a backup before updating (see "Updating and backups" above). Because the ids and nicknames both
+depend on `SECRET`, changing it makes all existing users look unregistered.
 
 ## Tests
 

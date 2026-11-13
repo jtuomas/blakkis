@@ -47,7 +47,7 @@ class User {
     this.created = new Date(created);
   }
   isAdmin() {
-    return settings.admin_id !== null && utils.hashSha256(settings.admin_id) === this.userId;
+    return settings.admin_id !== null && utils.hashId(settings.admin_id) === this.userId;
   }
 
   drinkBooze(amount, description) {
@@ -104,7 +104,7 @@ class User {
   }
 
   joinGroup(groupId) {
-    let groupIdHash = utils.hashSha256(groupId);
+    let groupIdHash = utils.hashId(groupId);
     return pool
       .query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [
         this.userId,
@@ -124,7 +124,7 @@ class User {
   }
 
   leaveGroup(groupId) {
-    let groupIdHash = utils.hashSha256(groupId);
+    let groupIdHash = utils.hashId(groupId);
     return pool
       .query('select userId, groupId from users_in_groups where userId=$1 and groupId=$2', [
         this.userId,
@@ -290,7 +290,7 @@ users.User = User;
 
 users.new = (userId, nick, weight, gender, height, read_terms) => {
   const params = [
-    utils.hashSha256(parseInt(userId, 10)),
+    utils.hashId(parseInt(userId, 10)),
     utils.encrypt(nick),
     parseInt(weight, 10),
     gender,
@@ -324,7 +324,7 @@ users.new = (userId, nick, weight, gender, height, read_terms) => {
 };
 
 users.find = userId => {
-  userId = utils.hashSha256(userId);
+  userId = utils.hashId(userId);
   return pool
     .query(
       'select userId, nick, weight, gender, height, read_terms, read_announcements, created from users where userId=$1',
@@ -358,7 +358,7 @@ users.find = userId => {
     row, so drinks and groups are included even if that row is missing.
 */
 users.getAllData = userId => {
-  const params = [utils.hashSha256(userId)];
+  const params = [utils.hashId(userId)];
   return Promise.all([
     pool.query('select * from users where userId=$1', params),
     pool.query('select * from users_drinks where userId=$1 order by created asc', params),

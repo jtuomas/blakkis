@@ -62,7 +62,7 @@ describe('users.js', function() {
           return pool.query('select * from users');
         })
         .then(res => {
-          assert.notEqual(res.rows.find(x => x.userid === utils.hashSha256('1')), undefined);
+          assert.notEqual(res.rows.find(x => x.userid === utils.hashId('1')), undefined);
           done();
         })
         .catch(err => done(err));
@@ -76,7 +76,7 @@ describe('users.js', function() {
           const found = res.rows[0];
           assert.notEqual(found.userid, '1');
           assert.notEqual(found.nick, 'nick');
-          assert.equal(found.userid, utils.hashSha256('1'));
+          assert.equal(found.userid, utils.hashId('1'));
           assert.equal(utils.decrypt(found.nick), 'nick');
           done();
         })
@@ -217,7 +217,7 @@ describe('users.js', function() {
         .then(() => pool.query('select * from users_in_groups where userid=$1', [user.userId]))
         .then(res => {
           let rows = res.rows;
-          assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
+          assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashId(12347)));
           done();
         })
         .catch(err => done(err));
@@ -233,14 +233,14 @@ describe('users.js', function() {
         .then(res => {
           let rows = res.rows;
           assert.equal(rows.length, 2);
-          assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashSha256(12347)));
+          assert(rows.find(x => x.userid === user.userId && x.groupid === utils.hashId(12347)));
           return user.leaveGroup(12347);
         })
         .then(() => pool.query('select * from users_in_groups where userid=$1', [user.userId]))
         .then(res => {
           let rows = res.rows;
           assert.equal(rows.length, 1);
-          assert(!rows.find(x => x.groupid === utils.hashSha256(12347)));
+          assert(!rows.find(x => x.groupid === utils.hashId(12347)));
           done();
         })
         .catch(err => done(err));
