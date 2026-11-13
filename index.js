@@ -36,6 +36,12 @@ const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
 const log = require('loglevel').getLogger('system');
 
+// A failed request caused by one message must not crash the whole bot
+process.on('unhandledRejection', reason => {
+  log.error('Unhandled promise rejection');
+  log.error(reason);
+});
+
 // Setup bot
 let bot;
 
