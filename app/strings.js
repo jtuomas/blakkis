@@ -458,7 +458,7 @@ strings.commands = {
   /* /stats2 */
   stats2: {
     cmd_description:
-      '/stats - listaa ryhmän tai sinun kulutustilastoja annoksittain. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot (enintään {DRINK_DAYS})',
+      '/stats2 - listaa ryhmän tai sinun kulutustilastoja annoksittain. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot (enintään {DRINK_DAYS})',
     private:
       'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä.',
     group:

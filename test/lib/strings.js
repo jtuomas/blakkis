@@ -46,6 +46,11 @@ describe('strings.js (terms and privacy)', function() {
     assert(startQuestion.length < MAX_MESSAGE_LENGTH, `${startQuestion.length} characters`);
   });
 
+  it('should start the description of each stats command with its own name', function() {
+    assert(strings.commands.stats.cmd_description.startsWith('/stats - '));
+    assert(strings.commands.stats2.cmd_description.startsWith('/stats2 - '));
+  });
+
   it('should tell about the rights of the user in the privacy policy', function() {
     assert(privacy.indexOf('tietosuojavaltuutetulle') !== -1);
     assert(privacy.indexOf('/whoami') !== -1);
