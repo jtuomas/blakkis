@@ -1,10 +1,12 @@
 # BläkkisVuohi
 
-A telegram bot designed to help monitor current EBAC level. Has group functionality to list all users' EBAC in permilles or Finnish standard drinks (12.0 grams). Try it out at [https://t.me/blakkisvuohibot](https://t.me/blakkisvuohibot)!
+A telegram bot designed to help monitor current EBAC level. Has group functionality to list all users' EBAC in permilles or Finnish standard drinks (12.0 grams). Try it out at [https://t.me/otitblakkisbot](https://t.me/otitblakkisbot)!
 
 Thanks Yago for the excellent [Telegram Bot API framework for NodeJS](https://github.com/yagop/node-telegram-bot-api). 
 
-This project is supported by the awesome [Futurice Open Source and Social Impact program](https://spiceprogram.org/).
+Originally developed by Joonas Ulmanen, now maintained by Oulun Tietoteekkarit ry.
+
+The original project was supported by the [Futurice Open Source and Social Impact program](https://spiceprogram.org/).
 
 ## How to run
 
@@ -52,7 +54,7 @@ Set the next env variables:
 - `ADMIN_ID` = your Telegram user id
 - `BOT_USERNAME` = the bot's username without @
 
-Bot runs automatically when pushed to the Heroku remote.
+Bot runs automatically when pushed to the Heroku remote. The Heroku setup has not been tested with the current version. The other variables (`MAINTAINER_NAME`, `MAINTAINER_CONTACT`, data retention) are listed in `.env_docker_example`.
 
 ## Database upgrades
 
@@ -70,3 +72,5 @@ export DATABASE_URL=postgres://postgres:test@localhost:5432/postgres \
 node setup_test_db.js
 npx mocha --exit test/*
 ```
+
+The same tests run in GitHub Actions on every push and pull request (`.github/workflows/test.yml`).
