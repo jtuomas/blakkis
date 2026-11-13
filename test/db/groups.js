@@ -80,7 +80,7 @@ describe('groups.js', function() {
         .then(res => {
           assert.equal(res.sum, 12347 * 3);
           assert(res.created instanceof Date);
-          // insert drink 3 hours into the past
+          // insert drink 2 hours into the past
           return user.drinkBoozeLate(
             [
               {
@@ -95,7 +95,8 @@ describe('groups.js', function() {
         .then(res => {
           assert.equal(res.sum, 12347 * 4);
           assert(res.created instanceof Date);
-          return group.getDrinkSumForXHours(2);
+          // Window of 1 hour so the 2 hour old drink is never on the boundary
+          return group.getDrinkSumForXHours(1);
         })
         .then(res => {
           assert.equal(res.sum, 12347 * 3);

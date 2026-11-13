@@ -287,6 +287,20 @@ describe('utils', function() {
     });
   });
 
+  describe('encrypt() and decrypt()', function() {
+    it('should round-trip data and use a random iv', function() {
+      process.env.SECRET = 'test1';
+      delete require.cache[require.resolve('../../app/lib/utils.js')];
+
+      const utils1 = require('../../app/lib/utils.js');
+      const encrypted1 = utils1.encrypt('Vuohi äö');
+      const encrypted2 = utils1.encrypt('Vuohi äö');
+      assert(encrypted1 !== encrypted2);
+      assert.equal(utils1.decrypt(encrypted1), 'Vuohi äö');
+      assert.equal(utils1.decrypt(encrypted2), 'Vuohi äö');
+    });
+  });
+
   describe('decrypt()', function() {
     it('should not work with SECRET not set', function() {
       const data = 'test_data';

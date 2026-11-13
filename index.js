@@ -30,6 +30,8 @@ if (NEWRELIC) {
   global.newrelic = require('newrelic');
 }
 
+// Opt in to promise cancellation fix, silences the library's deprecation warning
+process.env.NTBA_FIX_319 = 1;
 const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
 const log = require('loglevel').getLogger('system');

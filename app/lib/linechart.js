@@ -23,57 +23,51 @@
 
 'use strict';
 
-const { CanvasRenderService } = require('chartjs-node-canvas');
+const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 const log = require('loglevel').getLogger('system');
 
 const linechart = (module.exports = {});
 
-const lineChartTemplate = {
-  type: 'line',
-  data: {
-    labels: [],
-    datasets: [],
-  },
-  options: {
-    elements: {
-      line: {
-        tension: 0.4,
+// Reuse one renderer; creating one per chart leaks memory
+const canvasRenderService = new ChartJSNodeCanvas({ width: 1024, height: 728, backgroundColour: 'white' });
+
+function createLineChartConfig(data, title) {
+  return {
+    type: 'line',
+    data: data,
+    options: {
+      elements: {
+        line: {
+          tension: 0.4,
+        },
+      },
+      plugins: {
+        title: {
+          display: true,
+          text: title,
+        },
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Aika',
+          },
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Promillet',
+          },
+        },
       },
     },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-    scales: {
-      xAxes: [
-        {
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: 'Aika',
-          },
-        },
-      ],
-      yAxes: [
-        {
-          display: true,
-          scaleLabel: {
-            display: true,
-            labelString: 'Promillet',
-          },
-        },
-      ],
-    },
-  },
-};
+  };
+}
 
 linechart.getLineGraphBuffer = function(data, title) {
   log.debug('Trying to make a line chart from data');
-  var canvasRenderService = new CanvasRenderService(1024, 728);
-  var lineChartConfig = lineChartTemplate;
-
-  lineChartConfig.data = data;
-  lineChartConfig.options.title.text = title;
-
-  return canvasRenderService.renderToBuffer(lineChartConfig);
+  return canvasRenderService.renderToBuffer(createLineChartConfig(data, title));
 };

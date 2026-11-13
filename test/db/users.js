@@ -77,7 +77,7 @@ describe('users.js', function() {
           assert.notEqual(found.userid, '1');
           assert.notEqual(found.nick, 'nick');
           assert.equal(found.userid, utils.hashSha256('1'));
-          assert.equal(found.nick, utils.encrypt('nick'));
+          assert.equal(utils.decrypt(found.nick), 'nick');
           done();
         })
         .catch(err => done(err));

@@ -247,18 +247,30 @@ utils.hashSha256 = function(data) {
   return hash.digest('hex');
 };
 
+// AES-256-GCM with a random IV. Output is hex of iv | auth tag | ciphertext.
+let encryptionKey;
+function getEncryptionKey() {
+  if (!encryptionKey) {
+    if (!_secret_) {
+      throw new Error('SECRET is not set');
+    }
+    encryptionKey = crypto.scryptSync(_secret_, 'blakkisvuohi', 32);
+  }
+  return encryptionKey;
+}
+
 utils.encrypt = function(data) {
-  const cipher = crypto.createCipher('aes192', _secret_);
-  let encrypted = cipher.update(data, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return encrypted;
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv('aes-256-gcm', getEncryptionKey(), iv);
+  const encrypted = Buffer.concat([cipher.update(data, 'utf8'), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), encrypted]).toString('hex');
 };
 
 utils.decrypt = function(data) {
-  const cipher = crypto.createDecipher('aes192', _secret_);
-  let encrypted = cipher.update(data, 'hex', 'utf8');
-  encrypted += cipher.final('utf8');
-  return encrypted;
+  const raw = Buffer.from(data, 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', getEncryptionKey(), raw.subarray(0, 12));
+  decipher.setAuthTag(raw.subarray(12, 28));
+  return Buffer.concat([decipher.update(raw.subarray(28)), decipher.final()]).toString('utf8');
 };
 
 utils.groupDrinksByUser = drinks => {
