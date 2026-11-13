@@ -84,8 +84,13 @@ To avoid storing personal data forever, the bot deletes old data on startup and 
 - `INACTIVE_USER_RETENTION_DAYS` (default 365): users who have not marked a drink in this time are
   deleted completely, including their group memberships and drinks
 
-The same numbers are shown to users in `/terms` and the privacy policy. `MAINTAINER_NAME` and
-`MAINTAINER_CONTACT` are shown in `/about` and `/help`.
+Data deleted this way stays in the nightly backups (`deploy/backup.sh`) until they are rotated out
+after 14 days, so it is gone from the backups at most 14 days later.
+
+The same numbers are shown to users in `/terms` and the privacy policy (Help -> Yksityisyys), which
+also name the backup period. If you change the number of backups kept (`KEEP` in `deploy/backup.sh`),
+update those texts in `app/strings.js` too. `MAINTAINER_NAME` is shown as the controller of the data
+and `MAINTAINER_CONTACT` as the contact in `/about`, `/help`, `/terms` and the privacy policy.
 
 ### Heroku
 
