@@ -23,30 +23,42 @@
 
 'use strict';
 const express = require('express');
-const packageInfo = require('./package.json');
 const bodyParser = require('body-parser');
+const crypto = require('crypto');
 const log = require('loglevel').getLogger('system');
+const utils = require('./app/lib/utils.js');
 
-// Setup web server for heroku
+// Telegram sends the secret token given to setWebHook in this header
+function hasValidSecret(req, res, next) {
+  const expected = Buffer.from(utils.webhookSecret());
+  const given = Buffer.from(req.get('x-telegram-bot-api-secret-token') || '');
+  if (given.length !== expected.length || !crypto.timingSafeEqual(given, expected)) {
+    return res.sendStatus(401);
+  }
+  next();
+}
 
-var app = express();
-app.use(bodyParser.json());
+function createApp(bot) {
+  const app = express();
+  app.disable('x-powered-by');
 
-app.get('/', (req, res) => {
-  res.json({
-    version: packageInfo.version,
+  app.get('/', (req, res) => {
+    res.send('ok');
   });
-});
 
-var server = app.listen(process.env.PORT, '0.0.0.0', () => {
-  var host = server.address().address;
-  var port = server.address().port;
-  log.info('Web server started at http://%s:%s', host, port);
-});
-
-module.exports = function(bot, token) {
-  app.post('/' + token, (req, res) => {
+  // The secret is checked before the body is parsed
+  app.post('/telegram', hasValidSecret, bodyParser.json(), (req, res) => {
     bot.processUpdate(req.body);
     res.sendStatus(200);
   });
+
+  return app;
+}
+
+// Web endpoints for HTTPS webhook bot setups (like Heroku)
+module.exports = function(bot) {
+  const server = createApp(bot).listen(process.env.PORT, '0.0.0.0', () => {
+    log.info('Web server started at http://%s:%s', server.address().address, server.address().port);
+  });
 };
+module.exports.createApp = createApp;

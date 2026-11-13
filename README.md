@@ -46,7 +46,7 @@ The same numbers are shown to users in `/terms` and the privacy policy. `MAINTAI
 
 Set the next env variables:
 - `TOKEN` = your bot token
-- `APP_URL` = your heroku url (i.e. https://blakkisvuohi.heroku.com)
+- `APP_URL` = your heroku url (i.e. https://blakkisvuohi.heroku.com). Telegram is told to send updates to `<APP_URL>/telegram` together with a secret token derived from `SECRET`; requests without it are rejected
 - `DATABASE_URL` = your database url
 - `NODE_ENV` = 'production'
 - `BOT_MODE` = 'webhook'

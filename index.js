@@ -53,13 +53,20 @@ if (BOT_MODE === 'polling') {
 } else {
   bot = new Bot(TOKEN);
 
-  // This informs the Telegram servers of the new webhook.
+  // This informs the Telegram servers of the new webhook. Telegram sends the
+  // secret token back in a header, which web.js checks.
   // Note: we do not need to pass in the cert, as it already provided
-  // bot.setWebHook(`${url}/bot${TOKEN}`);
-  bot.setWebHook(process.env.APP_URL + TOKEN);
+  bot
+    .setWebHook(process.env.APP_URL.replace(/\/+$/, '') + '/telegram', {
+      secret_token: require('./app/lib/utils.js').webhookSecret(),
+    })
+    .catch(err => {
+      log.error('Setting the webhook failed');
+      log.error(err);
+    });
 
   // Load web server
-  require('./web.js')(bot, TOKEN);
+  require('./web.js')(bot);
 }
 
 // Load app
