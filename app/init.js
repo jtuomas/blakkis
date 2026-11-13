@@ -30,17 +30,7 @@ module.exports = function(bot) {
   const ratelimit = require('./lib/ratelimit.js');
   const strings = require('./strings.js');
   const log = require('loglevel');
-  const settings = require('./settings.js');
   const syslog = log.getLogger('system');
-
-  // Initialize logging levels
-  log.getLogger('system').setLevel(settings.log_system_level);
-  log.getLogger('db').setLevel(settings.log_db_level);
-  log.getLogger('commands').setLevel(settings.log_commands_level);
-
-  syslog.info('Set system log level to ' + settings.log_system_level);
-  syslog.info('Set db log level to ' + settings.log_db_level);
-  syslog.info('Set commands log level to ' + settings.log_commands_level);
 
   syslog.info('Current date and time is ' + new Date().toString());
 
