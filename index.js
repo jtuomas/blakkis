@@ -42,34 +42,50 @@ process.on('unhandledRejection', reason => {
   log.error(reason);
 });
 
-// Setup bot
-let bot;
+function start() {
+  // Setup bot
+  let bot;
 
-if (BOT_MODE === 'polling') {
-  const botOptions = {
-    polling: true, // used when no HTTPS:// connection available
-  };
-  bot = new Bot(TOKEN, botOptions);
-} else {
-  bot = new Bot(TOKEN);
+  if (BOT_MODE === 'polling') {
+    const botOptions = {
+      polling: true, // used when no HTTPS:// connection available
+    };
+    bot = new Bot(TOKEN, botOptions);
+  } else {
+    bot = new Bot(TOKEN);
 
-  // This informs the Telegram servers of the new webhook. Telegram sends the
-  // secret token back in a header, which web.js checks.
-  // Note: we do not need to pass in the cert, as it already provided
-  bot
-    .setWebHook(process.env.APP_URL.replace(/\/+$/, '') + '/telegram', {
-      secret_token: require('./app/lib/utils.js').webhookSecret(),
-    })
-    .catch(err => {
-      log.error('Setting the webhook failed');
-      log.error(err);
-    });
+    // This informs the Telegram servers of the new webhook. Telegram sends the
+    // secret token back in a header, which web.js checks.
+    // Note: we do not need to pass in the cert, as it already provided
+    bot
+      .setWebHook(process.env.APP_URL.replace(/\/+$/, '') + '/telegram', {
+        secret_token: require('./app/lib/utils.js').webhookSecret(),
+      })
+      .catch(err => {
+        log.error('Setting the webhook failed');
+        log.error(err);
+      });
 
-  // Load web server
-  require('./web.js')(bot);
+    // Load web server
+    require('./web.js')(bot);
+  }
+
+  // Load app
+  require('./app/init.js')(bot);
+
+  log.info('BläkkisVuohi started in ' + BOT_MODE + ' mode');
 }
 
-// Load app
-require('./app/init.js')(bot);
+const exitWith = message => err => {
+  log.error(message);
+  log.error(err);
+  process.exit(1);
+};
 
-log.info('BläkkisVuohi started in ' + BOT_MODE + ' mode');
+// The ids in the database must be up to date before the bot handles any message, otherwise
+// every existing user would look unregistered. Running with a half upgraded database is worse
+// than not running, so a failure stops the process.
+require('./app/db/maintenance.js')
+  .upgradeSchema()
+  .then(start, exitWith('Database upgrade failed, not starting the bot'))
+  .catch(exitWith('Starting the bot failed'));

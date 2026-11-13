@@ -21,7 +21,7 @@
     unit tests for removing old data
 */
 
-/* globals describe, it, beforeEach */
+/* globals describe, it, beforeEach, afterEach */
 
 'use strict';
 
@@ -29,6 +29,7 @@ const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const maintenance = require('../../app/db/maintenance.js');
 const users = require('../../app/db/users.js');
+const utils = require('../../app/lib/utils.js');
 const pg = require('pg');
 const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -46,6 +47,98 @@ describe('maintenance.js', function() {
   describe('maintenance.upgradeSchema()', function() {
     it('should be safe to run on an up to date database', function() {
       return maintenance.upgradeSchema().then(() => maintenance.upgradeSchema());
+    });
+  });
+
+  describe('maintenance.migrateIdHashes()', function() {
+    const legacy = id => utils.hashSha256(id);
+    const markDone = () =>
+      pool.query(
+        "insert into schema_meta (key, value) values ('id_hash', 'hmac') on conflict (key) do update set value=excluded.value",
+      );
+
+    // Other tests expect a converted database
+    afterEach(markDone);
+
+    function insertLegacyRows() {
+      return pool
+        .query('delete from users')
+        .then(() => pool.query('delete from users_drinks'))
+        .then(() => pool.query('delete from users_in_groups'))
+        .then(() =>
+          pool.query(
+            'insert into users (userid, nick, weight, gender) values ($1, $3, 80, $4), ($2, $3, 70, $4)',
+            [legacy(1), legacy(2), utils.encrypt('vanha'), 'mies'],
+          ),
+        )
+        .then(() =>
+          pool.query("insert into users_drinks (userid, alcohol, description) values ($1, 1000, 'kalja')", [
+            legacy(1),
+          ]),
+        )
+        .then(() =>
+          pool.query('insert into users_in_groups (userid, groupid) values ($1, $3), ($2, $3)', [
+            legacy(1),
+            legacy(2),
+            legacy(5),
+          ]),
+        )
+        .then(() => pool.query("delete from schema_meta where key='id_hash'"));
+    }
+
+    it('should convert plain sha256 ids to keyed ones so that users are still found', function() {
+      return pool
+        .query('create table if not exists schema_meta (key text primary key, value text not null)')
+        .then(insertLegacyRows)
+        .then(() => maintenance.migrateIdHashes())
+        .then(converted => {
+          // Distinct ids per column: 2 users, 1 drink owner, 2 group members, 1 group
+          assert.equal(converted, 6);
+          return users.find(1);
+        })
+        .then(user => {
+          assert.equal(user.username, 'vanha');
+          return Promise.all([
+            pool.query('select userid from users_drinks'),
+            pool.query('select userid, groupid from users_in_groups order by userid'),
+          ]);
+        })
+        .then(([drinks, groups]) => {
+          assert.deepEqual(drinks.rows.map(row => row.userid), [utils.hashId(1)]);
+          assert.deepEqual(groups.rows.map(row => row.groupid), [utils.hashId(5), utils.hashId(5)]);
+          assert.deepEqual(
+            groups.rows.map(row => row.userid).sort(),
+            [utils.hashId(1), utils.hashId(2)].sort(),
+          );
+        });
+    });
+
+    it('should convert only once', function() {
+      return pool
+        .query('create table if not exists schema_meta (key text primary key, value text not null)')
+        .then(insertLegacyRows)
+        .then(() => maintenance.migrateIdHashes())
+        .then(() => maintenance.migrateIdHashes())
+        .then(converted => {
+          assert.equal(converted, 0);
+          return users.find(2);
+        })
+        .then(user => assert.equal(user.username, 'vanha'));
+    });
+
+    it('should leave an empty database converted', function() {
+      return pool
+        .query('create table if not exists schema_meta (key text primary key, value text not null)')
+        .then(() => pool.query("delete from schema_meta where key='id_hash'"))
+        .then(() => pool.query('delete from users'))
+        .then(() => pool.query('delete from users_drinks'))
+        .then(() => pool.query('delete from users_in_groups'))
+        .then(() => maintenance.migrateIdHashes())
+        .then(converted => {
+          assert.equal(converted, 0);
+          return pool.query("select value from schema_meta where key='id_hash'");
+        })
+        .then(res => assert.equal(res.rows[0].value, 'hmac'));
     });
   });
 

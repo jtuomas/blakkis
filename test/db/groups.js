@@ -41,7 +41,7 @@ describe('groups.js', function() {
   describe('groups.Group()', function() {
     it('should return a group object with hashed group id', function() {
       const group = new groups.Group(0);
-      assert.equal(group.groupId, utils.hashSha256(0));
+      assert.equal(group.groupId, utils.hashId(0));
     });
   });
 

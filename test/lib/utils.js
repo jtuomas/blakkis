@@ -251,6 +251,20 @@ describe('utils', function() {
     });
   });
 
+  describe('hashId()', function() {
+    it('should be a keyed hash on top of the plain sha256', function() {
+      const hashed = utils.hashId(12345);
+      assert(/^[0-9a-f]{64}$/.test(hashed));
+      assert.notEqual(hashed, utils.hashSha256(12345));
+      assert.equal(hashed, utils.rehashId(utils.hashSha256(12345)));
+    });
+
+    it('should give the same result for a number and the same string', function() {
+      assert.equal(utils.hashId(12345), utils.hashId('12345'));
+      assert.notEqual(utils.hashId(12345), utils.hashId(12346));
+    });
+  });
+
   describe('webhookSecret()', function() {
     it('should be a stable hex string that differs from SECRET', function() {
       const secret = utils.webhookSecret();
