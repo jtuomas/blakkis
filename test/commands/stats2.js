@@ -29,6 +29,7 @@ require('../../app/commands/stats2.js');
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
+const settings = require('../../app/settings.js');
 
 describe('stats2.js', function() {
   beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
@@ -69,5 +70,16 @@ describe('stats2.js', function() {
         done();
       })
       .catch(err => done(err));
+  });
+
+  it('Calling /stats2 privately with a longer period than the retention time should limit the period', function() {
+    const mocked = blakkistest.mockMsgAndBot();
+    mocked.msg.from.id = blakkistest.realIds[0];
+    return Commands.call('/stats2', mocked.msg, ['/stats2', '9999']).then(() => {
+      assert.equal(
+        mocked.internals.sentText.indexOf('Olet ' + settings.drink_retention_days + ' päivän aikana'),
+        0,
+      );
+    });
   });
 });

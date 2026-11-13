@@ -31,6 +31,10 @@ module.exports = {
   // unknown errors are not forwarded to anyone.
   admin_id: process.env.ADMIN_ID ? parseInt(process.env.ADMIN_ID, 10) : null,
   bot_username: (process.env.BOT_USERNAME || 'blakkisvuohibot').toLowerCase(),
+  // Shown to users in /about, /help and the privacy policy
+  maintainer_name: process.env.MAINTAINER_NAME || 'the maintainers',
+  maintainer_contact:
+    process.env.MAINTAINER_CONTACT || 'https://github.com/jtuomas/blakkis/issues',
   // Drinks are deleted after this many days, and users who have not marked a
   // drink in inactive_user_retention_days are deleted completely
   drink_retention_days: parseInt(process.env.DRINK_RETENTION_DAYS, 10) || 30,
