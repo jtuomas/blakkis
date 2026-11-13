@@ -404,6 +404,15 @@ strings.commands = {
     img_failed: 'Kuvan muodostus epäonnistui!',
   },
 
+  /* /lampokartta */
+  lampokartta: {
+    cmd_description:
+      '/lampokartta - Näyttää ryhmän 24h tapahtumat lämpökarttana, jossa jokaisella on oma rivinsä.',
+    graph_title: 'Lämpökartta feat. {chat_title}',
+    title_truncated: '{title}\nNäytetään {shown} suurinta {total} henkilöstä.',
+    no_drinks: 'Kukaan ei ole merkannut juomia viimeisen 24 tunnin aikana, joten kartta olisi tyhjä.',
+  },
+
   /* /laatta */
   laatta: {
     cmd_description: '/laatta - Poista viimeksi merkattu juoma tilastoista.',
