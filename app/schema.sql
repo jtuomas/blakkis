@@ -24,7 +24,8 @@ create table if not exists users (
     height int not null default 175,
     read_terms boolean not null default false,
     read_announcements int not null default 0,
-    created timestamp with time zone not null default now()
+    created timestamp with time zone not null default now(),
+    last_active timestamp with time zone not null default now() /* last drink marked, for removing inactive users */
 );
 
 create table if not exists groups (

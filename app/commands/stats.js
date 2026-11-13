@@ -27,18 +27,20 @@ const stats = require('../db/stats.js');
 const groups = require('../db/groups.js');
 const STANDARD_DRINK_GRAMS = require('../constants.js').STANDARD_DRINK_GRAMS;
 const strings = require('../strings.js');
+const settings = require('../settings.js');
 
 function printStats(context, msg, words, user) {
-  const hours = words[1] && parseInt(words[1]) ? parseInt(words[1]) * 24 : 4 * 365 * 24;
+  // Drinks older than the retention time have been deleted, so a longer period
+  // would only dilute the averages
+  const requestedDays = parseInt(words[1], 10);
+  const days = requestedDays > 0 ? Math.min(requestedDays, settings.drink_retention_days) : null;
+  const hours = days ? days * 24 : 4 * 365 * 24;
   if (context.isPrivateChat()) {
     return user.getDrinkSumForXHours(hours).then(res => {
       const sum = res.sum;
       const created = new Date(res.created);
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-      const daysBetween =
-        words[1] && parseInt(words[1])
-          ? parseInt(words[1])
-          : Math.round((new Date().getTime() - created.getTime()) / oneDay);
+      const daysBetween = days || Math.round((new Date().getTime() - created.getTime()) / oneDay);
       const grams = sum / 1000.0;
       return context.privateReply(
         strings.commands.stats.private.format({
@@ -60,9 +62,7 @@ function printStats(context, msg, words, user) {
       const firstDrinkCreated = new Date(groupDrinkSum.created);
       const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
       const daysBetween =
-        words[1] && parseInt(words[1])
-          ? parseInt(words[1])
-          : Math.round((new Date().getTime() - firstDrinkCreated.getTime()) / oneDay);
+        days || Math.round((new Date().getTime() - firstDrinkCreated.getTime()) / oneDay);
       const grams = groupDrinkSum.sum / 1000.0;
       return context.chatReply(
         strings.commands.stats.group.format({

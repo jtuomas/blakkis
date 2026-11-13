@@ -124,11 +124,13 @@ function sendErrorMessage(msg, err) {
       log.error(err);
       log.error(msg);
       log.error('!!!Unknown error!!!');
-      return msg
-        .sendMessage(
-          settings.admin_id,
-          `Unknown error ${err.message} upon user ${msg.from.username} sending msg ${msg.text}`,
-        )
+      return (settings.admin_id !== null
+        ? msg.sendMessage(
+            settings.admin_id,
+            `Unknown error ${err.message} upon user ${msg.from.username} sending msg ${msg.text}`,
+          )
+        : Promise.resolve()
+      )
         .then(() => msg.sendPrivateMessage(strings.commands.blakkis.error))
         .catch(err => {
           log.error('CANT SEND ERROR MESSAGES');

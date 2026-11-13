@@ -23,6 +23,7 @@
 
 'use strict';
 
+const settings = require('./settings.js');
 const strings = (module.exports = {});
 
 strings.emoji = {
@@ -103,7 +104,7 @@ strings.commands = {
   about: {
     cmd_description: '/about - About the bot',
     text:
-      "BläkkisVuohi is a bot currently developed and maintained by @ultsi. It's completely open source, free and licensed under GPLv3. Source code can be found at https://gitlab.com/ultsi-projects/blakkisvuohi. Terms of Service and Privacy Policy can be found by using the command /terms",
+      "BläkkisVuohi is a bot maintained by {JÄRJESTÖ} (contact: @YLLÄPITO). It was originally developed by Joonas Ulmanen. It's completely open source, free and licensed under GPLv3. Source code can be found at https://github.com/jtuomas/blakkis. Terms of Service and Privacy Policy can be found by using the command /terms",
   },
 
   /* /admin_loglevel */
@@ -318,7 +319,7 @@ strings.commands = {
           button_text: 'Juominen',
           header_title: 'FAQ: Juominen',
           on_select:
-            '*Kannattaako juoma merkata avatessa vai viimeistellessä?*\nJuomat kannattaa merkata silloin, kun ne avaa. Promillearvioinnissa oletetaan juoman imeytyvän 99-prosenttisesti 30 minuutissa. Lisäksi avatessa juoman muistaa merkata paremmin.\n\n*Kuinka tarkka promillejen arviointi on?*\nNoin 1.5‰ asti hyvin tarkka - tätä pidemmälle menneitä tutkimuksia ei ole tehty (jos on, laita viestiä @ultsi), joten laskukaava alkaa heittämään 1.5‰ jälkeen. Botin arviot ovat myös linjassa mm. lintukoto.net -laskurin kanssa.\n\n*Unohdin lisätä juomat, mitä nyt?*\nKäytä /jalkikellotus-komentoa, tai /start-valikosta löytyvää Jälkikellotus-nappulaa.',
+            '*Kannattaako juoma merkata avatessa vai viimeistellessä?*\nJuomat kannattaa merkata silloin, kun ne avaa. Promillearvioinnissa oletetaan juoman imeytyvän 99-prosenttisesti 30 minuutissa. Lisäksi avatessa juoman muistaa merkata paremmin.\n\n*Kuinka tarkka promillejen arviointi on?*\nNoin 1.5‰ asti hyvin tarkka - tätä pidemmälle menneitä tutkimuksia ei ole tehty (jos on, laita viestiä @YLLÄPITO), joten laskukaava alkaa heittämään 1.5‰ jälkeen. Botin arviot ovat myös linjassa mm. lintukoto.net -laskurin kanssa.\n\n*Unohdin lisätä juomat, mitä nyt?*\nKäytä /jalkikellotus-komentoa, tai /start-valikosta löytyvää Jälkikellotus-nappulaa.',
         },
         ryhmat: {
           button_text: 'Ryhmät',
@@ -330,14 +331,14 @@ strings.commands = {
           button_text: 'Koodi',
           header_title: 'FAQ: Koodi',
           on_select:
-            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://gitlab.com/ultsi-projects/blakkisvuohi.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nTällä hetkellä kehittäjänä toimii @ultsi, jolle voi laittaa suoraan privaviestiä. Issuen lisääminen gitlabiin toimii kanssa. https://gitlab.com/ultsi-projects/blakkisvuohi/-/issues\n\n",
+            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://github.com/jtuomas/blakkis. Bläkkisvuohen kehitti alun perin Joonas Ulmanen, ja nykyään sitä ylläpitää {JÄRJESTÖ}.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nLaita viestiä ylläpitäjälle @YLLÄPITO. Issuen lisääminen GitHubiin toimii kanssa. https://github.com/jtuomas/blakkis/issues\n\n",
         },
       },
       privacy: {
         button_text: 'Yksityisyys',
         header_title: 'Help: Yksityisyys',
         on_select:
-          'Sinun yksityisyys on turvattu Bläkkisvuohen kehittäjien toimesta mahdollisimman hyvin. Tässä muutama kohta yksityisyydestä:\n\n*Mitä tietoja kerätään?*\nBläkkisvuohen käyttö edellyttää seuraavien tietojen keräämistä:\n- Telegramiin määritelty nimimerkki tai nimi\n- Tiiviste(hash) Telegram-tilisi tunnisteesta (userId)\n- Paino\n- Pituus\n- Sukupuoli\n- Merkattujen juomien alkoholipitoisuudet, nimet ja juomisajat\n- Tiivisteet(hash) liityttyjen ryhmien tunnisteista (groupId)\n\n*Missä ja miten tietoja säilötään?*\nTietoja säilytetään virtuaalipalvelimella Euroopassa, ja vain Bläkkisvuohen ylläpitäjillä on sinne pääsy. Yksilöivät henkilötiedot on salattu salasanalla tietokannassa.\n\n*Minulla on lisäkysymyksiä yksityisyyteen liittyen!*\nOnnistuu, ota yhteyttä @ultsi.',
+          'Sinun yksityisyys on turvattu Bläkkisvuohen kehittäjien toimesta mahdollisimman hyvin. Tässä muutama kohta yksityisyydestä:\n\n*Mitä tietoja kerätään?*\nBläkkisvuohen käyttö edellyttää seuraavien tietojen keräämistä:\n- Telegramiin määritelty nimimerkki tai nimi\n- Tiiviste(hash) Telegram-tilisi tunnisteesta (userId)\n- Paino\n- Pituus\n- Sukupuoli\n- Merkattujen juomien alkoholipitoisuudet, nimet ja juomisajat\n- Tiivisteet(hash) liityttyjen ryhmien tunnisteista (groupId)\n\n*Missä ja miten tietoja säilötään?*\nTietoja säilytetään virtuaalipalvelimella Euroopassa, ja vain Bläkkisvuohen ylläpitäjillä on sinne pääsy. Yksilöivät henkilötiedot on salattu salasanalla tietokannassa.\n\n*Kuinka kauan tietoja säilytetään?*\nJuomat poistetaan automaattisesti {DRINK_DAYS} päivän jälkeen. Jos et ole merkinnyt yhtään juomaa {INACTIVE_DAYS} päivään, tunnuksesi ja kaikki siihen liittyvät tiedot poistetaan kokonaan. Voit myös poistaa tunnuksesi milloin tahansa tunnuksen asetuksista.\n\n*Minulla on lisäkysymyksiä yksityisyyteen liittyen!*\nOnnistuu, ota yhteyttä @YLLÄPITO.',
       },
     },
   },
@@ -436,7 +437,7 @@ strings.commands = {
   /* /stats */
   stats: {
     cmd_description:
-      '/stats - listaa ryhmän tai sinun kulutustilastoja. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot',
+      '/stats - listaa ryhmän tai sinun kulutustilastoja. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot (enintään {DRINK_DAYS})',
     private:
       'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä.',
     group:
@@ -446,7 +447,7 @@ strings.commands = {
   /* /stats2 */
   stats2: {
     cmd_description:
-      '/stats - listaa ryhmän tai sinun kulutustilastoja annoksittain. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot',
+      '/stats - listaa ryhmän tai sinun kulutustilastoja annoksittain. Lisäämällä numeron komennon perään voit valita, kuinka monelta päivältä taaksepäin haluat tilastot (enintään {DRINK_DAYS})',
     private:
       'Olet {day_count} päivän aikana tuhonnut {grams} grammaa alkoholia, joka vastaa {standard_drinks} annosta. Keskimäärin olet juonut {avg_standard_drinks} annosta per päivä.',
     group:
@@ -457,7 +458,7 @@ strings.commands = {
   terms: {
     cmd_description: '/terms - Terms of Service',
     reply:
-      '*Käyttöehdot*\n\nKäyttämällä Bläkkisvuohea olet hyväksynyt seuraavat käyttöehdot. Bläkkisvuohen päätarkoitus on arvioida alkoholin määrää kehossa. Bläkkisvuohen toiminta voi muuttua tai pysähtyä milloin vain. Sinun täytyy olla yli 18 vuotta käyttääksesi Bläkkisvuohea. Bläkkisvuohen kehittäjät tai ylläpitäjät eivät ole vastuussa mistään suorasta tai epäsuorasta haitasta, jota palvelun käyttäminen voi aiheuttaa. Bläkkisvuohi on ilmainen käyttää. Ominaisuuksien, kuten promillejen arvioiminen, takia Bläkkisvuohi tallentaa käyttäjistä erinäisiä tietoja ja käyttää näitä hyväksi laskennassa. Sinuun suoraan linkitettävät tiedot salataan ennen tallentamista. Tietoja ei koskaan anneta tai myydä eteenpäin kolmansille osapuolille. Tallennetut tiedot voidaan poistaa pyynnöstä.\n\nBläkkisvuohen tuottamat arviot ovat arvioita, eikä niihin voi missään tapauksessa täysin luottaa. Noudata lakia, kun käytät alkoholia.\n\nNämä käyttöehdot voivat muuttua milloin vain ilman erillistä huomautusta. Uusimmat käyttöehdot voi aina lukea /terms-komennolla. Nämä käyttöehdot ovat voimassa 10.01.2018 lähtien.',
+      '*Käyttöehdot*\n\nKäyttämällä Bläkkisvuohea olet hyväksynyt seuraavat käyttöehdot. Bläkkisvuohen päätarkoitus on arvioida alkoholin määrää kehossa. Bläkkisvuohen toiminta voi muuttua tai pysähtyä milloin vain. Sinun täytyy olla yli 18 vuotta käyttääksesi Bläkkisvuohea. Bläkkisvuohen kehittäjät tai ylläpitäjät eivät ole vastuussa mistään suorasta tai epäsuorasta haitasta, jota palvelun käyttäminen voi aiheuttaa. Bläkkisvuohi on ilmainen käyttää. Ominaisuuksien, kuten promillejen arvioiminen, takia Bläkkisvuohi tallentaa käyttäjistä erinäisiä tietoja ja käyttää näitä hyväksi laskennassa. Sinuun suoraan linkitettävät tiedot salataan ennen tallentamista. Tietoja ei koskaan anneta tai myydä eteenpäin kolmansille osapuolille. Juomat poistetaan automaattisesti {DRINK_DAYS} päivän jälkeen, ja tunnus tietoineen poistetaan, jos et ole merkinnyt yhtään juomaa {INACTIVE_DAYS} päivään. Voit myös poistaa tunnuksesi milloin tahansa asetuksista tai pyytää tietojesi poistamista.\n\nBläkkisvuohen tuottamat arviot ovat arvioita, eikä niihin voi missään tapauksessa täysin luottaa. Noudata lakia, kun käytät alkoholia.\n\nNämä käyttöehdot voivat muuttua milloin vain ilman erillistä huomautusta. Uusimmat käyttöehdot voi aina lukea /terms-komennolla. Nämä käyttöehdot ovat voimassa 13.11.2026 lähtien.',
   },
 
   /* /tunnus */
@@ -491,3 +492,25 @@ strings.commands = {
       'Käyttäjä {username}\nID: {user_id}\nPaino: {weight}kg\nPituus: {height}cm\nSukupuoli: {gender}\nKäyttäjä luotu: {created}',
   },
 };
+
+// Fill in the values that come from settings
+const settingsPlaceholders = [
+  ['{JÄRJESTÖ}', settings.maintainer_name],
+  ['@YLLÄPITO', settings.maintainer_contact],
+  ['{DRINK_DAYS}', settings.drink_retention_days],
+  ['{INACTIVE_DAYS}', settings.inactive_user_retention_days],
+];
+
+function fillSettings(node) {
+  Object.keys(node).forEach(key => {
+    if (typeof node[key] === 'string') {
+      settingsPlaceholders.forEach(placeholder => {
+        node[key] = node[key].split(placeholder[0]).join(placeholder[1]);
+      });
+    } else if (node[key] && typeof node[key] === 'object') {
+      fillSettings(node[key]);
+    }
+  });
+}
+
+fillSettings(strings.commands);

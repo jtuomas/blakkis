@@ -57,6 +57,14 @@ module.exports = function(bot) {
     Commands.call('', msg, []);
   });
 
+  // Remove old drinks and inactive users regularly
+  require('./db/maintenance.js')
+    .start()
+    .catch(err => {
+      syslog.error('Database maintenance could not be started');
+      syslog.error(err);
+    });
+
   // Enable commands here.
   require('./commands/about.js');
   require('./commands/annokset.js');

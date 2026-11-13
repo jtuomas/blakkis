@@ -8,52 +8,27 @@ This project is supported by the awesome [Futurice Open Source and Social Impact
 
 ## How to run
 
-### VPS
-
-#### Normal docker
-
-Build dockerfile
+### VPS (Docker Compose)
 
 ```
-docker build -t blakkisvuohi .
+cp .env_docker_example .env
+# fill in TOKEN, BOT_USERNAME, ADMIN_ID, SECRET, the maintainer info and the database password
+docker compose up -d --build
 ```
 
-Run postgresql 9.6
+Compose starts the bot and a Postgres 16 database. The schema is loaded when the database is
+created for the first time, and the bot upgrades older databases by itself on startup.
 
-```
-mkdir -p /srv/lxc/postgresql/data
+#### Data retention
 
-docker pull postgres:9.6.5-alpine
+To avoid storing personal data forever, the bot deletes old data on startup and then every hour:
 
-docker run --name postgres \
-  -v /srv/lxc/postgresql/data:/var/lib/postgresql/data \
-  --restart always \
-  -d postgres:9.6.5-alpine
+- `DRINK_RETENTION_DAYS` (default 30): drinks older than this are deleted
+- `INACTIVE_USER_RETENTION_DAYS` (default 365): users who have not marked a drink in this time are
+  deleted completely, including their group memberships and drinks
 
-```
-
-Run the vuohi. Remember to set .env variables correctly
-
-```
-source .env &&
-docker run --name blakkisvuohi \
-  --link postgres:postgres \
-  -e TOKEN=$TOKEN \
-  -e DATABASE_URL=$DATABASE_URL \
-  -e NEWRELIC=$NEWRELIC \
-  -e NEWRELIC_LICENSE=$NEWRELIC_LICENSE \
-  -e BOT_MODE=polling \
-  -e NODE_ENV=production \
-  --restart always \
-  -d blakkisvuohi:latest
-```
-#### Docker Compose
-
-Remember to set .env_docker variables as in .env_docker_example
-
-```
-docker-compose up -d
-```
+The same numbers are shown to users in `/terms` and the privacy policy. `MAINTAINER_NAME` and
+`MAINTAINER_CONTACT` are shown in `/about` and `/help`.
 
 ### Heroku
 
@@ -69,3 +44,15 @@ Bot runs automatically when pushed to the Heroku remote.
 ## Migrations
 
 BläkkisVuohi uses (https://github.com/salsita/node-pg-migrate)[node-pg-migrate] for database migrations. To run database migrations, do `./node_modules/node-pg-migrate/bin/node-pg-migrate up`
+
+## Tests
+
+Tests need a Postgres database:
+
+```
+docker run -d --rm --name blakkis-test-db -e POSTGRES_PASSWORD=test -p 5432:5432 postgres:16-alpine
+export DATABASE_URL=postgres://postgres:test@localhost:5432/postgres \
+  SECRET=reallylonganduniquesecretstring ADMIN_ID=12345 NEWRELIC=false
+node setup_test_db.js
+npx mocha --exit test/*
+```

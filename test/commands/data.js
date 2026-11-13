@@ -65,7 +65,7 @@ describe('data.js', function() {
         const userLines = findDocument(mocked, 'user.csv').text.split('\r\n');
         assert.equal(
           userLines[0],
-          '﻿userid,nick,weight,gender,height,read_terms,read_announcements,created',
+          '﻿userid,nick,weight,gender,height,read_terms,read_announcements,created,last_active',
         );
         const userCells = userLines[1].split(',');
         assert.equal(userCells[0], user.userId);

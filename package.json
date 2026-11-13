@@ -9,29 +9,39 @@
     "start_win": "node index.js",
     "set_env_win": "env.cmd",
     "switch_to_dev": "export $(cat .env | xargs) && wget --spider https://api.telegram.org/bot$TOKEN/setWebhook?url= --delete-after && node index.js",
-    "migrate": "export $(cat .env) && ./node_modules/node-pg-migrate/bin/node-pg-migrate up",
     "test": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w test/*",
     "test-with-coverage": "export $(cat .env) && nyc --reporter=text mocha --exit test/*",
     "test-only": "export $(cat .env) && ./node_modules/mocha/bin/mocha -w"
   },
   "engines": {
-    "node": "12.12.0",
-    "npm": "6.0.1"
+    "node": ">=22"
   },
   "author": "Joonas Ulmanen",
   "license": "GPL-3.0",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "chart.js": "^2.8.0",
-    "chartjs-node-canvas": "^2.4.0",
-    "express": "^4.17.1",
-    "loglevel": "^1.6.4",
-    "node-pg-migrate": "^3.23.3",
-    "node-telegram-bot-api": "^0.40.0",
-    "pg": "^7.12.1"
+    "body-parser": "^1.20.3",
+    "canvas": "^3.1.0",
+    "chart.js": "^4.4.8",
+    "chartjs-node-canvas": "^5.0.0",
+    "express": "^4.21.2",
+    "loglevel": "^1.9.2",
+    "node-telegram-bot-api": "^0.66.0",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
-    "mocha": "^6.2.2",
-    "nyc": "^14.1.1"
+    "mocha": "^12.0.3",
+    "nyc": "^17.1.0"
+  },
+  "overrides": {
+    "request": "npm:@cypress/request@^3.0.10",
+    "lodash": "^4.17.21",
+    "qs": "^6.16.2",
+    "uuid": "^11.1.1",
+    "serialize-javascript": "^7.1.4",
+    "y18n": "^4.0.3",
+    "mocha": {
+      "glob": "14.0.2",
+      "minimatch": "11.0.2"
+    }
   }
 }

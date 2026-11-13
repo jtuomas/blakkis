@@ -1,14 +1,18 @@
-FROM node:8.7.0
+FROM node:22-bookworm-slim
 
-WORKDIR /install
-RUN npm install canvas@1.6.7
-COPY package.json /install
-RUN npm install
-ENV NODE_PATH=/install/node_modules
-WORKDIR /app/blakkisvuohi
-RUN echo "Europe/Helsinki" > /etc/timezone
-RUN dpkg-reconfigure -f noninteractive tzdata
+# Fonts for chart labels rendered by canvas
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends fonts-dejavu-core fontconfig tzdata \
+  && rm -rf /var/lib/apt/lists/*
+
+ENV TZ=Europe/Helsinki
+ENV NODE_ENV=production
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
 COPY . .
 
+USER node
 CMD ["node", "index.js"]
