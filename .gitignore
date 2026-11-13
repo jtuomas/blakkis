@@ -5,3 +5,5 @@ node_modules/*
 env.cmd
 .nyc_output/
 .DS_Store
+backups/
+logs/

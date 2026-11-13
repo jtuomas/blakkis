@@ -23,13 +23,58 @@ created for the first time, and the bot upgrades older databases by itself on st
 
 #### Updating and backups
 
+By hand:
+
 ```
 git pull && docker compose up -d --build
 docker compose exec -T db pg_dump -U blakkis blakkis | gzip > blakkis-$(date +%F).gz
 ```
 
-Keep `SECRET` safe: the user nicknames in the database are encrypted with it and cannot be read
-without it. Backups contain data the bot has already deleted, so remove old backups regularly.
+Keep `SECRET` safe: the user nicknames and the hashed user and group ids in the database depend on
+it, so without it they cannot be read or matched to the users. Backups contain data the bot has
+already deleted, so remove old backups regularly.
+
+##### Automatic updates and backups
+
+Two scripts in `deploy/` can be run from cron on the server:
+
+- `deploy/backup.sh` dumps the database to `backups/` (gzipped, readable only by the owner) and
+  keeps the 14 newest dumps, so deleted data does not stay in backups for long. It messages the
+  admin if the dump fails.
+- `deploy/update.sh` takes a backup, pulls `master` (fast-forward only), rebuilds the images
+  (also fetching newer Node and Postgres base images), restarts the containers and waits for the
+  bot to report that it started. The admin gets a Telegram message from the bot when something was
+  updated or when a step failed, and nothing when there was nothing new. It does not roll back
+  by itself. If the branch is not `master` or the pull cannot be fast-forwarded, it stops and
+  tells the admin.
+
+The scripts read `TOKEN` and `ADMIN_ID` from `.env`, so the admin must have started the bot.
+The clone on the server must be on `master`, `git pull` must work without asking for a password,
+and the user must be allowed to run `docker`. Try them once by hand, then add them to `crontab -e`
+(this updates on Tuesdays at 05:00 and backs up every night at 03:30):
+
+```
+deploy/notify.sh "test message"
+deploy/backup.sh
+deploy/update.sh
+
+30 3 * * *  /path/to/blakkis/deploy/backup.sh >> /path/to/blakkis/logs/backup.log 2>&1
+0 5 * * 2   /path/to/blakkis/deploy/update.sh >> /path/to/blakkis/logs/update.log 2>&1
+```
+
+Create the `logs` directory first (`mkdir logs`). It and `backups/` are ignored by git and Docker.
+
+To go back to an earlier version, find its commit with `git log --oneline`, then
+`git checkout <commit> && docker compose up -d --build`. The weekly update refuses to run until
+you are back on master (`git checkout master`), which reminds you to return. To restore the
+database from a backup:
+
+```
+docker compose stop bot
+docker compose exec -T db sh -c 'dropdb -U "$POSTGRES_USER" "$POSTGRES_DB" && createdb -U "$POSTGRES_USER" "$POSTGRES_DB"'
+gunzip -c backups/blakkis-DATE.sql.gz | docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" "$POSTGRES_DB"'
+docker compose up -d
+```
 
 #### Data retention
 

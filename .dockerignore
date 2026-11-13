@@ -5,3 +5,5 @@ npm-debug.log
 .DS_Store
 test
 .nyc_output
+backups
+logs
