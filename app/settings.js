@@ -39,4 +39,6 @@ module.exports = {
   // drink in inactive_user_retention_days are deleted completely
   drink_retention_days: parseInt(process.env.DRINK_RETENTION_DAYS, 10) || 30,
   inactive_user_retention_days: parseInt(process.env.INACTIVE_USER_RETENTION_DAYS, 10) || 365,
+  // Messages one user (other than the admin) can send per minute before being ignored
+  rate_limit_per_minute: parseInt(process.env.RATE_LIMIT_PER_MINUTE, 10) || 20,
 };

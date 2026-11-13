@@ -27,6 +27,8 @@
 module.exports = function(bot) {
   const Commands = require('./lib/commands.js');
   const utils = require('./lib/utils.js');
+  const ratelimit = require('./lib/ratelimit.js');
+  const strings = require('./strings.js');
   const log = require('loglevel');
   const settings = require('./settings.js');
   const syslog = log.getLogger('system');
@@ -42,19 +44,34 @@ module.exports = function(bot) {
 
   syslog.info('Current date and time is ' + new Date().toString());
 
+  // True if the sender is over the rate limit and the message must be ignored.
+  // The user is told about the limit once, not on every ignored message.
+  function isRateLimited(msg) {
+    const result = ratelimit.check(msg.from.id);
+    if (result === ratelimit.NOTIFY) {
+      msg.sendPrivateMessage(strings.commands.blakkis.rate_limited).catch(() => {});
+    }
+    return result !== ratelimit.ALLOW;
+  }
+
   // Initialize message hook to Command framework
   bot.on('message', msg => {
     syslog.debug('message in a ' + msg.chat.type + ' chat');
 
     utils.attachMethods(msg, bot);
 
-    Commands.rawCall(msg);
+    if (!isRateLimited(msg)) {
+      Commands.rawCall(msg);
+    }
   });
 
   bot.on('callback_query', msg => {
     syslog.debug('callback query');
     utils.attachMethods(msg, bot);
-    Commands.call('', msg, []);
+
+    if (!isRateLimited(msg)) {
+      Commands.call('', msg, []);
+    }
   });
 
   // Remove old drinks and inactive users regularly
