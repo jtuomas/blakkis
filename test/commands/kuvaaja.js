@@ -75,6 +75,7 @@ describe('kuvaaja.buildChartData()', function() {
 describe('kuvaaja.js', function() {
   beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);
   it('Calling /kuvaaja should sent a photo to the group', function(done) {
+    this.timeout(10000); // rendering the image can be slow on a cold CI runner
     const mocked = blakkistest.mockMsgAndBot();
     mocked.msg.from.id = blakkistest.realIds[0];
     mocked.msg.chat.type = 'chat';
