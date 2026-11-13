@@ -37,6 +37,8 @@ contexts.Context = class {
       parent: null,
     };
     this.lastSentMessage = {};
+    // Whether the last private message left a reply keyboard on the user's screen
+    this.replyKeyboardShown = false;
   }
 
   sendMessage(to_id, text, options) {
@@ -74,6 +76,7 @@ contexts.Context = class {
   }
 
   privateReply(text) {
+    this.replyKeyboardShown = false;
     let options = {
       parse_mode: 'Markdown',
       reply_markup: {
@@ -84,6 +87,7 @@ contexts.Context = class {
   }
 
   privateReplyWithKeyboard(text, keyboardButtons) {
+    this.replyKeyboardShown = true;
     let options = {
       parse_mode: 'Markdown',
       reply_markup: {
