@@ -47,7 +47,7 @@ class User {
     this.created = new Date(created);
   }
   isAdmin() {
-    return utils.hashSha256(settings.admin_id) === this.userId;
+    return settings.admin_id !== null && utils.hashSha256(settings.admin_id) === this.userId;
   }
 
   drinkBooze(amount, description) {

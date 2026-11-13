@@ -103,7 +103,7 @@ strings.commands = {
   about: {
     cmd_description: '/about - About the bot',
     text:
-      "BläkkisVuohi is a bot currently developed and maintained by @ultsi. It's completely open source, free and licensed under GPLv3. Source code can be found at https://gitlab.com/ultsi-projects/blakkisvuohi. Terms of Service and Privacy Policy can be found by using the command /terms",
+      "BläkkisVuohi is a bot maintained by {JÄRJESTÖ} (contact: @YLLÄPITO). It was originally developed by Joonas Ulmanen. It's completely open source, free and licensed under GPLv3. Source code can be found at https://github.com/jtuomas/blakkis. Terms of Service and Privacy Policy can be found by using the command /terms",
   },
 
   /* /admin_loglevel */
@@ -318,7 +318,7 @@ strings.commands = {
           button_text: 'Juominen',
           header_title: 'FAQ: Juominen',
           on_select:
-            '*Kannattaako juoma merkata avatessa vai viimeistellessä?*\nJuomat kannattaa merkata silloin, kun ne avaa. Promillearvioinnissa oletetaan juoman imeytyvän 99-prosenttisesti 30 minuutissa. Lisäksi avatessa juoman muistaa merkata paremmin.\n\n*Kuinka tarkka promillejen arviointi on?*\nNoin 1.5‰ asti hyvin tarkka - tätä pidemmälle menneitä tutkimuksia ei ole tehty (jos on, laita viestiä @ultsi), joten laskukaava alkaa heittämään 1.5‰ jälkeen. Botin arviot ovat myös linjassa mm. lintukoto.net -laskurin kanssa.\n\n*Unohdin lisätä juomat, mitä nyt?*\nKäytä /jalkikellotus-komentoa, tai /start-valikosta löytyvää Jälkikellotus-nappulaa.',
+            '*Kannattaako juoma merkata avatessa vai viimeistellessä?*\nJuomat kannattaa merkata silloin, kun ne avaa. Promillearvioinnissa oletetaan juoman imeytyvän 99-prosenttisesti 30 minuutissa. Lisäksi avatessa juoman muistaa merkata paremmin.\n\n*Kuinka tarkka promillejen arviointi on?*\nNoin 1.5‰ asti hyvin tarkka - tätä pidemmälle menneitä tutkimuksia ei ole tehty (jos on, laita viestiä @YLLÄPITO), joten laskukaava alkaa heittämään 1.5‰ jälkeen. Botin arviot ovat myös linjassa mm. lintukoto.net -laskurin kanssa.\n\n*Unohdin lisätä juomat, mitä nyt?*\nKäytä /jalkikellotus-komentoa, tai /start-valikosta löytyvää Jälkikellotus-nappulaa.',
         },
         ryhmat: {
           button_text: 'Ryhmät',
@@ -330,7 +330,7 @@ strings.commands = {
           button_text: 'Koodi',
           header_title: 'FAQ: Koodi',
           on_select:
-            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://gitlab.com/ultsi-projects/blakkisvuohi.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nTällä hetkellä kehittäjänä toimii @ultsi, jolle voi laittaa suoraan privaviestiä. Issuen lisääminen gitlabiin toimii kanssa. https://gitlab.com/ultsi-projects/blakkisvuohi/-/issues\n\n",
+            "*Miten Bläkkisvuohi on koodattu?*\nLyhyesti: NodeJS-javascript-frameworkilla, sekä sen liitännäisillä ja tietokantana toimii Postgres. Pitkästi: katso koko koodi osoitteesta https://github.com/jtuomas/blakkis. Bläkkisvuohen kehitti alun perin Joonas Ulmanen, ja nykyään sitä ylläpitää {JÄRJESTÖ}.\n\n*Keksin uuden ominaisuuden, minne voin ilmoittaa siitä?*\nLaita viestiä ylläpitäjälle @YLLÄPITO. Issuen lisääminen GitHubiin toimii kanssa. https://github.com/jtuomas/blakkis/issues\n\n",
         },
       },
       privacy: {

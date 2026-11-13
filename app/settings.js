@@ -27,6 +27,8 @@ module.exports = {
   log_system_level: 'info',
   log_db_level: 'info',
   log_commands_level: 'info',
-  admin_id: 62461364, // @ultsi,
-  bot_username: 'blakkisvuohibot',
+  // Telegram user id of the bot admin. Without it there is no admin and
+  // unknown errors are not forwarded to anyone.
+  admin_id: process.env.ADMIN_ID ? parseInt(process.env.ADMIN_ID, 10) : null,
+  bot_username: (process.env.BOT_USERNAME || 'blakkisvuohibot').toLowerCase(),
 };
