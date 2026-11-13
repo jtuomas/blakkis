@@ -24,11 +24,53 @@
 /* globals describe, it, beforeEach */
 
 'use strict';
-require('../../app/commands/kuvaaja.js');
+const kuvaaja = require('../../app/commands/kuvaaja.js');
 
 const assert = require('assert');
 const blakkistest = require('../blakkistest.js');
 const Commands = require('../../app/lib/commands.js');
+
+function drinker(userid, nick, drinkHoursAgo) {
+  return {
+    userid: userid,
+    nick: nick,
+    weight: 80,
+    gender: 'mies',
+    height: 180,
+    drinks: drinkHoursAgo.map(hoursAgo => ({
+      alcohol: 14000,
+      created: new Date(Date.now() - hoursAgo * 3600 * 1000),
+    })),
+  };
+}
+
+describe('kuvaaja.buildChartData()', function() {
+  it('should give every drinker their own color', function() {
+    const data = kuvaaja.buildChartData({
+      a: drinker('a', 'Eka', [1]),
+      b: drinker('b', 'Toka', [2]),
+      c: drinker('c', 'Kolmas', [1, 0.5]),
+    });
+    const named = data.datasets.filter(dataset => dataset.label !== '');
+    assert.deepEqual(named.map(dataset => dataset.label), ['Eka', 'Toka', 'Kolmas']);
+    assert.equal(new Set(named.map(dataset => dataset.borderColor)).size, 3);
+  });
+
+  it('should draw the prediction in the same color without a legend label', function() {
+    const data = kuvaaja.buildChartData({ a: drinker('a', 'Eka', [1]) });
+    assert.equal(data.datasets.length, 2);
+    assert.equal(data.datasets[1].label, '');
+    assert.equal(data.datasets[1].borderColor, data.datasets[0].borderColor);
+  });
+
+  it('should leave out users with no alcohol in the time window', function() {
+    const data = kuvaaja.buildChartData({
+      a: drinker('a', 'Eka', [1]),
+      b: drinker('b', 'Selvä', [47]),
+    });
+    assert.deepEqual(data.datasets.filter(d => d.label !== '').map(d => d.label), ['Eka']);
+  });
+});
 
 describe('kuvaaja.js', function() {
   beforeEach(blakkistest.resetDbWithTestUsersAndGroupsAndDrinks);

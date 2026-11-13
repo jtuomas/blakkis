@@ -215,30 +215,31 @@ utils.toNumber = function(num) {
 };
 
 /*
-    Wad's 16 color palette
-    http://alumni.media.mit.edu/~wad/color/numbers.html
+    Line colors for charts, in the order they are handed out. All are clearly
+    distinguishable from each other and readable on a white background.
 */
-const wadsPalette = [
-  [0, 0, 0], // Black
-  [87, 87, 87], // Dk. Gray
-  [173, 35, 35], // Red
-  [42, 75, 215], // Blue
-  [29, 105, 20], // Green
-  [129, 74, 25], // Brown
-  [129, 38, 192], // Purple
-  [160, 160, 160], // Lt. Gray
-  [129, 197, 122], // Lt. Green
-  [157, 175, 255], // Lt. Blue
-  [41, 208, 208], // Cyan
-  [255, 146, 51], // Orange
-  [255, 238, 51], // Yellow
-  [233, 222, 187], // Tan
-  [255, 205, 243], // Pink
-  // [255, 255, 255] // White
+const chartPalette = [
+  '#1f77b4', // blue
+  '#d62728', // red
+  '#2ca02c', // green
+  '#ff7f0e', // orange
+  '#9467bd', // purple
+  '#17becf', // cyan
+  '#e377c2', // pink
+  '#8c564b', // brown
+  '#bcbd22', // olive
+  '#000000', // black
+  '#393b79', // navy
+  '#7f7f7f', // gray
 ];
 
 utils.getColorSet = function() {
-  return [].concat(wadsPalette); // return a copy
+  return [].concat(chartPalette); // return a copy
+};
+
+// Color for the nth line of a chart; wraps around if there are more lines than colors
+utils.getChartColor = function(n) {
+  return chartPalette[n % chartPalette.length];
 };
 
 utils.hashSha256 = function(data) {

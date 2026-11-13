@@ -39,9 +39,16 @@ function createLineChartConfig(data, title) {
       elements: {
         line: {
           tension: 0.4,
+          // Smooth without overshooting the real values
+          cubicInterpolationMode: 'monotone',
         },
       },
       plugins: {
+        legend: {
+          labels: {
+            filter: item => item.text !== '',
+          },
+        },
         title: {
           display: true,
           text: title,
@@ -57,6 +64,7 @@ function createLineChartConfig(data, title) {
         },
         y: {
           display: true,
+          min: 0,
           title: {
             display: true,
             text: 'Promillet',

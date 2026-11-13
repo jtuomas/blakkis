@@ -228,8 +228,10 @@ describe('utils', function() {
   });
 
   describe('getColorSet()', function() {
-    it('should return 15 colors', function() {
-      assert(utils.getColorSet().length === 15);
+    it('should return 12 distinct colors', function() {
+      const colors = utils.getColorSet();
+      assert.equal(colors.length, 12);
+      assert.equal(new Set(colors).size, 12);
     });
 
     it('should return a copy', function() {
@@ -237,6 +239,15 @@ describe('utils', function() {
       let second = utils.getColorSet();
       second.splice(1, 2);
       assert(first.length !== second.length);
+    });
+  });
+
+  describe('getChartColor()', function() {
+    it('should hand out palette colors in order and wrap around', function() {
+      const colors = utils.getColorSet();
+      assert.equal(utils.getChartColor(0), colors[0]);
+      assert.equal(utils.getChartColor(5), colors[5]);
+      assert.equal(utils.getChartColor(colors.length), colors[0]);
     });
   });
 
