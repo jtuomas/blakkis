@@ -86,6 +86,7 @@ strings.commands = {
     please_update_user_info: 'Päivitä käyttäjätietosi käyttämällä komentoa /tunnus.',
     announcements: 'Ilmoituksia:\n\n{announcements}',
     unauthorized: 'Ei käyttöoikeutta.',
+    rate_limited: 'Liian monta viestiä liian nopeasti. Odota hetki ja yritä uudelleen.',
     user404: 'Rekisteröidy ensiksi käyttämällä komentoa /tunnus.',
     help_text:
       'BläkkisVuohi auttaa sinua ja ystäviäsi seuraamaan rippauksesi (lue: promillejesi) tasoa. Aloita komennolla /start tai seuraa näitä ohjeita.\n\nLuo ensimmäiseksi tunnus komennolla /tunnus. Tunnuksen luomisen jälkeen voit alkaa kellottamaan juomia sisään komennolla /juoma. Annan sinulle arvioita rippauksesta komennolla /promillet. Minut voi myös lisätä ryhmään, jolloin kerron /promillet-komennolla kaikkien ryhmässä olevien rippitasot. Jokaisen ryhmäläisen täytyy kuitenkin sanoa ryhmässä /moro, jotta he pääsevät rippilistaukseen mukaan.',
