@@ -52,7 +52,7 @@ class User {
 
   drinkBooze(amount, description) {
     return pool.query(
-      'insert into users_drinks (userId, alcohol, description) values($1, $2, $3)',
+      'with active as (update users set last_active=now() where userId=$1) insert into users_drinks (userId, alcohol, description) values($1, $2, $3)',
       [this.userId, amount, description],
     );
   }
@@ -165,7 +165,7 @@ class User {
       log.debug(hoursAgo);
       queries.push(
         pool.query(
-          'insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)',
+          'with active as (update users set last_active=now() where userId=$1) insert into users_drinks (userId, alcohol, description, created) values($1, $2, $3, $4)',
           [this.userId, drink.mg, drink.text, hoursAgo],
         ),
       );
