@@ -165,14 +165,18 @@ class InlineKeyboardCommand {
       if (this.onTextAction) {
         return this.onTextAction(context, user, msg, words).then(res => {
           if (typeof res === 'string') {
-            const fullText =
-              header.format({
-                title: this.headerTitle,
-              }) + res;
-            return context.inlineKeyboardMessage(
-              fullText,
-              context.state.getInlineKeyboard(context, user),
-            );
+            const title = header.format({
+              title: this.headerTitle,
+            });
+            const inlineKeyboard = context.state.getInlineKeyboard(context, user);
+            if (context.replyKeyboardShown) {
+              // Telegram ignores remove_keyboard in a message that has an inline keyboard, so the
+              // answer is sent alone first to get rid of the reply keyboard of the earlier question
+              return context
+                .privateReply(res)
+                .then(() => context.inlineKeyboardMessage(title, inlineKeyboard));
+            }
+            return context.inlineKeyboardMessage(title + res, inlineKeyboard);
           } else if (typeof res === 'object') {
             const fullText =
               header.format({
