@@ -30,11 +30,23 @@ if (NEWRELIC) {
   global.newrelic = require('newrelic');
 }
 
-// Opt in to promise cancellation fix, silences the library's deprecation warning
+// Opt in to promise cancellation and file name fixes, silences the library's deprecation warnings
 process.env.NTBA_FIX_319 = 1;
+process.env.NTBA_FIX_350 = 1;
 const Bot = require('node-telegram-bot-api');
 const BOT_MODE = process.env.BOT_MODE || 'polling';
-const log = require('loglevel').getLogger('system');
+const loglevel = require('loglevel');
+const settings = require('./app/settings.js');
+const log = loglevel.getLogger('system');
+
+// Set before the database upgrade, otherwise its info messages are not shown
+loglevel.getLogger('system').setLevel(settings.log_system_level);
+loglevel.getLogger('db').setLevel(settings.log_db_level);
+loglevel.getLogger('commands').setLevel(settings.log_commands_level);
+
+log.info('Set system log level to ' + settings.log_system_level);
+log.info('Set db log level to ' + settings.log_db_level);
+log.info('Set commands log level to ' + settings.log_commands_level);
 
 // A failed request caused by one message must not crash the whole bot
 process.on('unhandledRejection', reason => {
