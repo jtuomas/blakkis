@@ -28,8 +28,24 @@ const log = require('loglevel').getLogger('system');
 
 const linechart = (module.exports = {});
 
-// Reuse one renderer; creating one per chart leaks memory
-const canvasRenderService = new ChartJSNodeCanvas({ width: 1024, height: 728, backgroundColour: 'white' });
+// The legend lists everyone on the right, so the chart gets taller with the number of people.
+// Renderers are kept per height and reused, creating one per chart leaks memory.
+const WIDTH = 1280;
+const HEIGHTS = [728, 1000, 1300, 1500];
+const renderers = {};
+
+function getRenderer(people) {
+  const needed = 100 + 23 * people;
+  const height = HEIGHTS.find(h => h >= needed) || HEIGHTS[HEIGHTS.length - 1];
+  if (!renderers[height]) {
+    renderers[height] = new ChartJSNodeCanvas({
+      width: WIDTH,
+      height: height,
+      backgroundColour: 'white',
+    });
+  }
+  return renderers[height];
+}
 
 function createLineChartConfig(data, title) {
   return {
@@ -45,13 +61,20 @@ function createLineChartConfig(data, title) {
       },
       plugins: {
         legend: {
+          position: 'right',
           labels: {
+            // The legend shows the marker shape and the color, which together name the line
+            usePointStyle: true,
+            boxWidth: 9,
+            padding: 6,
+            font: { size: 12 },
             filter: item => item.text !== '',
           },
         },
         title: {
           display: true,
           text: title,
+          font: { size: 18 },
         },
       },
       scales: {
@@ -77,5 +100,6 @@ function createLineChartConfig(data, title) {
 
 linechart.getLineGraphBuffer = function(data, title) {
   log.debug('Trying to make a line chart from data');
-  return canvasRenderService.renderToBuffer(createLineChartConfig(data, title));
+  const people = ((data && data.datasets) || []).filter(dataset => dataset.label !== '').length;
+  return getRenderer(people).renderToBuffer(createLineChartConfig(data, title));
 };
