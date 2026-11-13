@@ -19,6 +19,16 @@ docker compose up -d --build
 Compose starts the bot and a Postgres 16 database. The schema is loaded when the database is
 created for the first time, and the bot upgrades older databases by itself on startup.
 
+#### Updating and backups
+
+```
+git pull && docker compose up -d --build
+docker compose exec -T db pg_dump -U blakkis blakkis | gzip > blakkis-$(date +%F).gz
+```
+
+Keep `SECRET` safe: the user nicknames in the database are encrypted with it and cannot be read
+without it. Backups contain data the bot has already deleted, so remove old backups regularly.
+
 #### Data retention
 
 To avoid storing personal data forever, the bot deletes old data on startup and then every hour:
@@ -38,12 +48,16 @@ Set the next env variables:
 - `DATABASE_URL` = your database url
 - `NODE_ENV` = 'production'
 - `BOT_MODE` = 'webhook'
+- `SECRET` = a long random string, used to encrypt user data. Keep it, it cannot be changed later
+- `ADMIN_ID` = your Telegram user id
+- `BOT_USERNAME` = the bot's username without @
 
 Bot runs automatically when pushed to the Heroku remote.
 
-## Migrations
+## Database upgrades
 
-BläkkisVuohi uses (https://github.com/salsita/node-pg-migrate)[node-pg-migrate] for database migrations. To run database migrations, do `./node_modules/node-pg-migrate/bin/node-pg-migrate up`
+`app/schema.sql` creates the tables for a new database. Existing databases are upgraded by the bot
+itself on startup (`app/db/maintenance.js`), so there are no separate migrations to run.
 
 ## Tests
 
