@@ -1,6 +1,6 @@
 {
   "name": "blakkisvuohi",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "description": "A telegram bot that helps to track estimated blood alcohol concentration",
   "main": "index.js",
   "scripts": {
