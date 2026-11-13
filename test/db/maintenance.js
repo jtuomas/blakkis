@@ -97,7 +97,7 @@ describe('maintenance.js', function() {
           return users.find(1);
         })
         .then(user => {
-          assert.equal(user.nick, 'vanha');
+          assert.equal(user.username, 'vanha');
           return Promise.all([
             pool.query('select userid from users_drinks'),
             pool.query('select userid, groupid from users_in_groups order by userid'),
@@ -123,7 +123,7 @@ describe('maintenance.js', function() {
           assert.equal(converted, 0);
           return users.find(2);
         })
-        .then(user => assert.equal(user.nick, 'vanha'));
+        .then(user => assert.equal(user.username, 'vanha'));
     });
 
     it('should leave an empty database converted', function() {
