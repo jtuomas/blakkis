@@ -242,6 +242,18 @@ utils.getChartColor = function(n) {
   return chartPalette[n % chartPalette.length];
 };
 
+// Secret that Telegram sends back with every webhook request, derived so that
+// it does not need an env variable of its own
+utils.webhookSecret = function() {
+  if (!_secret_) {
+    throw new Error('SECRET is not set');
+  }
+  return crypto
+    .createHmac('sha256', _secret_)
+    .update('webhook')
+    .digest('hex');
+};
+
 utils.hashSha256 = function(data) {
   const hash = crypto.createHash('sha256');
   hash.update('' + data); // tostring

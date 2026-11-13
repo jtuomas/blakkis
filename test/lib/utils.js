@@ -251,6 +251,15 @@ describe('utils', function() {
     });
   });
 
+  describe('webhookSecret()', function() {
+    it('should be a stable hex string that differs from SECRET', function() {
+      const secret = utils.webhookSecret();
+      assert(/^[0-9a-f]{64}$/.test(secret));
+      assert.equal(secret, utils.webhookSecret());
+      assert.notEqual(secret, process.env.SECRET);
+    });
+  });
+
   describe('hashSha256()', function() {
     it("should return correct sha256 digest for 1, 'test', 'reallylongstring'", function() {
       // sha256 sums from online generator
