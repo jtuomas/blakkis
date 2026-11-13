@@ -76,6 +76,71 @@ gunzip -c backups/blakkis-DATE.sql.gz | docker compose exec -T db sh -c 'psql -U
 docker compose up -d
 ```
 
+#### Securing the server
+
+The bot uses polling, so it only makes outgoing connections and the database is not published to
+the network. Most of the work is keeping the host and the secrets safe. A checklist:
+
+**Secrets**
+
+- Only the owner should read `.env` (it has the bot token, `SECRET` and the database password):
+  `chmod 600 .env`. It is ignored by git and Docker, never commit it or paste it anywhere.
+- `SECRET`: a long random value (`openssl rand -hex 32`), kept in a password manager and as an offline
+  copy. Nicknames and the hashed ids depend on it and there is no way to change it later. Without it
+  the data and the backups cannot be used.
+- `POSTGRES_PASSWORD`: do not leave the `changeme` of the example file. Use for example
+  `openssl rand -hex 24` (hex is safe inside `DATABASE_URL`). The variable only takes effect when the
+  database is created. For an existing database change the password in Postgres first (it asks for
+  it, so it stays out of the shell history), then update both `POSTGRES_PASSWORD` and `DATABASE_URL`
+  in `.env` and run `docker compose up -d`:
+
+  ```
+  docker compose exec db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
+  \password
+  ```
+
+- If the bot token leaks: `/revoke` in BotFather, put the new token in `.env` and run
+  `docker compose up -d`. The same token must never run in two places at once (polling fails
+  with 409 Conflict).
+- In BotFather keep the group privacy of the bot enabled (Bot Settings -> Group Privacy). The privacy
+  policy promises that the bot cannot read anything but commands in groups.
+
+**Host**
+
+- SSH with keys only: in `/etc/ssh/sshd_config` set `PasswordAuthentication no` and
+  `PermitRootLogin no`, then reload sshd. Keep one session open while you test a new login.
+- Firewall: nothing needs to be reachable except SSH, for example
+  `ufw default deny incoming && ufw allow OpenSSH && ufw enable`. Docker bypasses ufw for ports it
+  publishes, so do not add `ports:` to the `db` service in `docker-compose.yml`.
+- Keep the operating system updated (on Debian and Ubuntu `unattended-upgrades`) and reboot now and then
+  for kernel updates. The containers are rebuilt with fresh base images by `deploy/update.sh` every week.
+- Being in the `docker` group is the same as being root. Only trusted users should be, and the user
+  that runs the cron jobs should not be used for anything else.
+- Use full disk encryption if the host offers it. The database and the backups hold weights, heights,
+  drinks and nicknames.
+
+**Backups**
+
+- `backups/` is only readable by its owner and the files are not encrypted. Do not copy them to shared
+  places. If you keep a copy elsewhere, encrypt it first (for example `gpg --symmetric` or `age`) and
+  delete it on the same schedule, as the privacy policy says backups are kept for 14 days.
+- Try the restore above once on another machine or a throwaway database, so that you know it works
+  before you need it.
+
+**GitHub**
+
+- Turn on two-factor authentication or a passkey for the account. `master` is protected (a pull
+  request and the `mocha` check are required) and `deploy/update.sh` deploys it, so access to the
+  account is access to the server.
+
+**If something leaks**
+
+If the server, `.env` or a backup may have been exposed: revoke the bot token, change the database
+password, and find out what was exposed. Someone with `SECRET` and the database can read the nicknames
+and work out the ids. Tell the users and the organisation. A personal data breach may have to be
+reported to the data protection ombudsman within 72 hours, so contact the person responsible for
+data protection of the organisation without delay.
+
 #### Data retention
 
 To avoid storing personal data forever, the bot deletes old data on startup and then every hour:
