@@ -1,14 +1,13 @@
-FROM node:8.7.0
+FROM node:12.22.12-bullseye
 
-WORKDIR /install
-RUN npm install canvas@1.6.7
-COPY package.json /install
-RUN npm install
-ENV NODE_PATH=/install/node_modules
-WORKDIR /app/blakkisvuohi
-RUN echo "Europe/Helsinki" > /etc/timezone
-RUN dpkg-reconfigure -f noninteractive tzdata
+ENV TZ=Europe/Helsinki
+ENV NODE_ENV=production
+
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
 
 COPY . .
 
+USER node
 CMD ["node", "index.js"]
