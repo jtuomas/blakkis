@@ -216,6 +216,22 @@ describe('commands.js', function() {
       Commands.call('/admin_command', mocked.msg, ['/admin_command']).catch(err => done(err));
     });
 
+    it('should not fail if the error message cannot be sent to a user who has not started the bot', function() {
+      const mocked = blakkistest.mockMsgAndBot();
+      mocked.msg.from.id = 0; // non user id
+      mocked.bot.sendMessage = () =>
+        Promise.reject(new Error("ETELEGRAM: 403 Forbidden: bot can't initiate conversation"));
+      Commands.register(
+        '/testusercommand3',
+        'help',
+        Commands.SCOPE_ALL,
+        Commands.PRIVILEGE_USER,
+        Commands.TYPE_SINGLE,
+        () => Promise.resolve(),
+      );
+      return Commands.call('/testusercommand3', mocked.msg, ['/testusercommand3']);
+    });
+
     it('should send general error if command itself is erroneous', function(done) {
       const mocked = blakkistest.mockMsgAndBot();
       Commands.register(

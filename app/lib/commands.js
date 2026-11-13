@@ -311,7 +311,10 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
     })
     .catch(err => {
       log.error(`Couldn\'t execute cmd ${cmd.name} properly, err message: ${err.message}`);
-      return sendErrorMessage(msg, err);
+      return sendErrorMessage(msg, err).catch(sendErr => {
+        // E.g. 403 when the user has never started a private chat with the bot
+        log.error(`Couldn't send the error message to the user: ${sendErr.message}`);
+      });
     });
 };
 
