@@ -47,3 +47,9 @@ create table if not exists users_drinks (
     description text,
     created timestamp with time zone not null default now()
 );
+
+create table if not exists announcements (
+    id serial primary key,
+    message text not null,
+    created timestamp with time zone not null default now()
+);

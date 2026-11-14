@@ -122,6 +122,28 @@ strings.commands = {
     error: 'Virhe! Tilastoja ei saatavilla.',
   },
 
+  /* /admin_status */
+  admin_status: {
+    cmd_description: '/admin_status - näyttää botin tilan ja version',
+    status_text:
+      'Botin tila:\nVersio: {version}\nKäynnissä: {uptime}\nMuisti (RSS): {memoryMb} MB\nAdmineja: {adminCount} kpl\nTietokanta: {dbStatus}',
+  },
+
+  /* /admin_groups */
+  admin_groups: {
+    cmd_description: '/admin_groups - listaa ryhmien yhteenvedon',
+    groups_text:
+      'Ryhmäyhteenveto:\nRyhmiä yhteensä: {totalGroups} kpl\nAktiivisia (14 pv): {activeGroups14Days} kpl\n\nSuurimpien ryhmien jäsenmäärät:\n{sizesList}',
+    no_groups: 'Ei ryhmiä.',
+  },
+
+  /* /admin_announce */
+  admin_announce: {
+    cmd_description: '/admin_announce <viesti> - lisää tiedote kaikille käyttäjille',
+    usage: 'Käyttö: /admin_announce <tiedotteen teksti>\nIlmoituksia tietokannassa yhteensä: {count} kpl.',
+    added: 'Tiedote #{count} lisätty. Jokainen käyttäjä näkee sen seuraavan komennon yhteydessä.',
+  },
+
   /* /annokset */
   annokset: {
     cmd_description: '/annokset - kertoo ryhmän kulutetut annokset viimeisen 48h ajalta',

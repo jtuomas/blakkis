@@ -30,6 +30,8 @@ const pool = new pg.Pool({
 const log = require('loglevel').getLogger('db');
 const settings = require('../settings.js');
 const utils = require('../lib/utils.js');
+const staticAnnouncements = require('../announcements.js');
+const announcementsDb = require('./announcements.js');
 
 let maintenance = (module.exports = {});
 
@@ -104,6 +106,40 @@ maintenance.migrateIdHashes = function() {
   );
 };
 
+// Seed initial static announcements into the database once so existing read_announcements counters stay valid.
+maintenance.seedAnnouncements = function() {
+  return pool.connect().then(client =>
+    client
+      .query('begin')
+      .then(() =>
+        client.query('lock table announcements, schema_meta in access exclusive mode'),
+      )
+      .then(() => client.query("select value from schema_meta where key='announcements_seeded'"))
+      .then(res => {
+        if (res.rows.length > 0) {
+          return 0;
+        }
+        return staticAnnouncements
+          .reduce(
+            (prev, msg) =>
+              prev.then(() =>
+                client.query('insert into announcements (message) values ($1)', [msg]),
+              ),
+            Promise.resolve(),
+          )
+          .then(() =>
+            client.query(
+              "insert into schema_meta (key, value) values ('announcements_seeded', 'true') on conflict (key) do update set value=excluded.value",
+            ),
+          )
+          .then(() => staticAnnouncements.length);
+      })
+      .then(seeded => client.query('commit').then(() => seeded))
+      .catch(err => client.query('rollback').then(() => Promise.reject(err)))
+      .finally(() => client.release()),
+  );
+};
+
 // Bring an existing database up to date with app/schema.sql
 maintenance.upgradeSchema = function() {
   return pool
@@ -115,10 +151,22 @@ maintenance.upgradeSchema = function() {
         'create table if not exists schema_meta (key text primary key, value text not null)',
       ),
     )
+    .then(() =>
+      pool.query(
+        'create table if not exists announcements (id serial primary key, message text not null, created timestamp with time zone not null default now())',
+      ),
+    )
     .then(() => maintenance.migrateIdHashes())
     .then(converted => {
       if (converted > 0) {
         log.info(`Converted ${converted} ids to keyed hashes`);
+      }
+    })
+    .then(() => maintenance.seedAnnouncements())
+    .then(seeded => {
+      announcementsDb.resetCache();
+      if (seeded > 0) {
+        log.info(`Seeded ${seeded} initial announcements`);
       }
     });
 };

@@ -96,6 +96,9 @@ module.exports = function(bot) {
   require('./commands/whoami.js');
 
   // Admin commands
+  require('./commands/admin_announce.js');
+  require('./commands/admin_groups.js');
   require('./commands/admin_loglevel.js');
   require('./commands/admin_stats.js');
+  require('./commands/admin_status.js');
 };
