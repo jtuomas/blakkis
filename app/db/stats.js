@@ -158,3 +158,31 @@ stats.getWappuStats = function(group, hours) {
       return Promise.reject(err);
     });
 };
+
+/**
+ * Check database connectivity and resolve to query latency in milliseconds.
+ */
+stats.ping = function() {
+  const startedAt = Date.now();
+  return pool.query('select 1').then(() => Date.now() - startedAt);
+};
+
+/**
+ * Fetch anonymized group counts and largest group sizes from the database.
+ */
+stats.getGroupSummary = function() {
+  log.debug('Fetching group summary from database');
+  return Promise.all([
+    pool.query('select count(distinct groupid) as count from users_in_groups'),
+    pool.query(
+      "select count(distinct groupid) as count from users_drinks join users_in_groups on users_in_groups.userid=users_drinks.userid where users_drinks.created >= NOW() - INTERVAL '14 days'",
+    ),
+    pool.query(
+      'select count(*) as members from users_in_groups group by groupid order by members desc limit 15',
+    ),
+  ]).then(res => ({
+    totalGroups: parseInt(res[0].rows[0].count, 10),
+    activeGroups14Days: parseInt(res[1].rows[0].count, 10),
+    topGroupSizes: res[2].rows.map(r => parseInt(r.members, 10)),
+  }));
+};

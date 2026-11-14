@@ -29,7 +29,7 @@ const contexts = require('./context.js');
 const strings = require('../strings.js');
 const utils = require('./utils.js');
 const log = require('loglevel').getLogger('system');
-const announcements = require('../announcements.js');
+const announcementsDb = require('../db/announcements.js');
 const settings = require('../settings.js');
 const errors = require('./errors.js');
 const InlineKeyboardCommand = require('./inline-keyboard-command.js');
@@ -263,18 +263,21 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
             if (!user.read_terms && cmd.privilege !== Commands.PRIVILEGE_ALL) {
               return Promise.reject(new errors.UserNotReadTerms(user));
             }
-            if (user.read_announcements < announcements.length) {
-              const unread_announcements = announcements.slice(
-                user.read_announcements,
-                announcements.length + 1,
-              );
-              msg.sendPrivateMessage(
-                strings.commands.blakkis.announcements.format({
-                  announcements: unread_announcements.join('\n\n'),
-                }),
-              );
-              user.updateReadAnnouncements(announcements.length);
-            }
+            return announcementsDb.getAll().then(announcements => {
+              if (user.read_announcements < announcements.length) {
+                const unread_announcements = announcements.slice(
+                  user.read_announcements,
+                  announcements.length + 1,
+                );
+                msg.sendPrivateMessage(
+                  strings.commands.blakkis.announcements.format({
+                    announcements: unread_announcements.join('\n\n'),
+                  }),
+                );
+                user.updateReadAnnouncements(announcements.length);
+              }
+              return user;
+            });
           }
           return Promise.resolve(user);
         })
