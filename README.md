@@ -14,7 +14,7 @@ The original project was supported by the [Futurice Open Source and Social Impac
 
 ```
 cp .env_docker_example .env
-# fill in TOKEN, BOT_USERNAME, ADMIN_ID, SECRET, the maintainer info and the database password
+# fill in TOKEN, BOT_USERNAME, ADMIN_IDS, SECRET, the maintainer info and the database password
 docker compose up -d --build
 ```
 
@@ -48,7 +48,7 @@ Two scripts in `deploy/` can be run from cron on the server:
   by itself. If the branch is not `master` or the pull cannot be fast-forwarded, it stops and
   tells the admin.
 
-The scripts read `TOKEN` and `ADMIN_ID` from `.env`, so the admin must have started the bot.
+The scripts read `TOKEN` and `ADMIN_IDS` (or `ADMIN_ID`) from `.env`, so the admins must have started the bot.
 The clone on the server must be on `master`, `git pull` must work without asking for a password,
 and the user must be allowed to run `docker`. Try them once by hand, then add them to `crontab -e`
 (this updates on Tuesdays at 05:00 and backs up every night at 03:30):
@@ -166,7 +166,7 @@ Set the next env variables:
 - `NODE_ENV` = 'production'
 - `BOT_MODE` = 'webhook'
 - `SECRET` = a long random string, used to encrypt and hash user data. Keep it, it cannot be changed later
-- `ADMIN_ID` = your Telegram user id
+- `ADMIN_IDS` = comma-separated Telegram user ids of the admins (or single `ADMIN_ID`)
 - `BOT_USERNAME` = the bot's username without @
 
 Bot runs automatically when pushed to the Heroku remote. The Heroku setup has not been tested with the current version. The other variables (`MAINTAINER_NAME`, `MAINTAINER_CONTACT`, data retention) are listed in `.env_docker_example`.

@@ -23,13 +23,31 @@
 
 'use strict';
 
-module.exports = {
+function parseAdminIds(rawIds, fallbackId) {
+  const raw = [rawIds, fallbackId].filter(Boolean).join(',');
+  const ids = raw
+    .split(',')
+    .map(s => parseInt(s.trim(), 10))
+    .filter(Number.isInteger);
+  return [...new Set(ids)];
+}
+
+const settings = {
   log_system_level: 'info',
   log_db_level: 'info',
   log_commands_level: 'info',
-  // Telegram user id of the bot admin. Without it there is no admin and
+  // Telegram user ids of the bot admins. Without any there is no admin and
   // unknown errors are not forwarded to anyone.
-  admin_id: process.env.ADMIN_ID ? parseInt(process.env.ADMIN_ID, 10) : null,
+  admin_ids: parseAdminIds(process.env.ADMIN_IDS, process.env.ADMIN_ID),
+  get admin_id() {
+    return this.admin_ids.length > 0 ? this.admin_ids[0] : null;
+  },
+  set admin_id(id) {
+    this.admin_ids = id === null || id === undefined ? [] : [id];
+  },
+  isAdmin(userId) {
+    return this.admin_ids.includes(userId);
+  },
   bot_username: (process.env.BOT_USERNAME || 'blakkisvuohibot').toLowerCase(),
   // Shown to users in /about, /help and the privacy policy
   maintainer_name: process.env.MAINTAINER_NAME || 'the maintainers',
@@ -39,6 +57,9 @@ module.exports = {
   // drink in inactive_user_retention_days are deleted completely
   drink_retention_days: parseInt(process.env.DRINK_RETENTION_DAYS, 10) || 30,
   inactive_user_retention_days: parseInt(process.env.INACTIVE_USER_RETENTION_DAYS, 10) || 365,
-  // Messages one user (other than the admin) can send per minute before being ignored
+  // Messages one user (other than an admin) can send per minute before being ignored
   rate_limit_per_minute: parseInt(process.env.RATE_LIMIT_PER_MINUTE, 10) || 20,
+  parseAdminIds,
 };
+
+module.exports = settings;

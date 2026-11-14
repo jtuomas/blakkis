@@ -216,6 +216,29 @@ describe('commands.js', function() {
       Commands.call('/admin_command', mocked.msg, ['/admin_command']).catch(err => done(err));
     });
 
+    it('an admin command should be able to be called by any admin in admin_ids', function(done) {
+      const originalAdmins = settings.admin_ids;
+      settings.admin_ids = [11111, 22222];
+      const mocked = blakkistest.mockMsgAndBot();
+      mocked.msg.chat.type = 'private';
+      mocked.msg.from.id = 22222;
+      Commands.register(
+        '/admin_command_multi',
+        'help',
+        Commands.SCOPE_ALL,
+        Commands.PRIVILEGE_ADMIN,
+        Commands.TYPE_SINGLE,
+        () => {
+          settings.admin_ids = originalAdmins;
+          done();
+        },
+      );
+      Commands.call('/admin_command_multi', mocked.msg, ['/admin_command_multi']).catch(err => {
+        settings.admin_ids = originalAdmins;
+        done(err);
+      });
+    });
+
     it('should not fail if the error message cannot be sent to a user who has not started the bot', function() {
       const mocked = blakkistest.mockMsgAndBot();
       mocked.msg.from.id = 0; // non user id
