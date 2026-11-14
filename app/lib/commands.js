@@ -129,13 +129,18 @@ function sendErrorMessage(msg, err) {
       log.error(err);
       log.error('command: ' + commandOf(msg) + ', chat type: ' + (msg.chat && msg.chat.type));
       log.error('!!!Unknown error!!!');
-      return (settings.admin_id !== null
-        ? msg.sendMessage(
-            settings.admin_id,
+      const notifyAdmins = settings.admin_ids.map(adminId =>
+        msg
+          .sendMessage(
+            adminId,
             `Unknown error ${err.message} upon command ${commandOf(msg)}`,
           )
-        : Promise.resolve()
-      )
+          .catch(notifyErr => {
+            log.error('CANT SEND ERROR MESSAGES');
+            log.error(notifyErr);
+          }),
+      );
+      return Promise.all(notifyAdmins)
         .then(() => msg.sendPrivateMessage(strings.commands.blakkis.error))
         .catch(err => {
           log.error('CANT SEND ERROR MESSAGES');
@@ -235,7 +240,7 @@ Commands.call = function call(firstWord, msg, words, bot_suffix) {
         .find(msg.from.id)
         .then(user => {
           if (!user) {
-            if (cmd.privilege === Commands.PRIVILEGE_ADMIN && msg.from.id !== settings.admin_id) {
+            if (cmd.privilege === Commands.PRIVILEGE_ADMIN && !settings.isAdmin(msg.from.id)) {
               return Promise.reject(
                 new errors.UserNotAdmin({
                   userId: msg.from.id,

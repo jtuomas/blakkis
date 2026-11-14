@@ -49,15 +49,16 @@ describe('ratelimit.js', function() {
     assert.equal(ratelimit.check(2, 1010), ratelimit.ALLOW);
   });
 
-  it('should never limit the admin', function() {
-    const originalAdmin = settings.admin_id;
-    settings.admin_id = 42;
+  it('should never limit any admin in admin_ids', function() {
+    const originalAdmins = settings.admin_ids;
+    settings.admin_ids = [42, 43];
     try {
       for (let i = 0; i < 10; i++) {
         assert.equal(ratelimit.check(42, 1000 + i), ratelimit.ALLOW);
+        assert.equal(ratelimit.check(43, 1000 + i), ratelimit.ALLOW);
       }
     } finally {
-      settings.admin_id = originalAdmin;
+      settings.admin_ids = originalAdmins;
     }
   });
 });

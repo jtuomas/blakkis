@@ -54,7 +54,7 @@ function sweep(now) {
 
 ratelimit.check = function(userId, now) {
   now = now === undefined ? Date.now() : now;
-  if (userId === settings.admin_id) {
+  if (settings.isAdmin(userId)) {
     return ratelimit.ALLOW;
   }
   sweep(now);
