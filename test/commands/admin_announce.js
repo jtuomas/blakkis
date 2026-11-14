@@ -28,6 +28,10 @@ const settings = require('../../app/settings.js');
 const announcementsDb = require('../../app/db/announcements.js');
 
 describe('admin_announce.js', function() {
+  afterEach(function() {
+    return announcementsDb.clear();
+  });
+
   it('Calling /admin_announce without text should show usage', function(done) {
     const mocked = blakkistest.mockMsgAndBot();
     mocked.msg.from.id = settings.admin_id;

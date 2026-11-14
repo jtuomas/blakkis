@@ -61,3 +61,12 @@ announcements.add = function(message) {
 announcements.resetCache = function() {
   cachedMessages = null;
 };
+
+/**
+ * Remove all announcements from the database and clear the cache (for tests).
+ */
+announcements.clear = function() {
+  return pool.query('delete from announcements').then(() => {
+    cachedMessages = null;
+  });
+};
