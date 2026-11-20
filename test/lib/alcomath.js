@@ -91,6 +91,13 @@ describe('alcomath.js', function() {
       const otherFactor = alcomath.getWidmarkFactorForUser(other);
       assert(maleFactor !== otherFactor);
     });
+
+    it('should return realistic Seidl Widmark factors using height in meters', function() {
+      const maleFactor = alcomath.getWidmarkFactorForUser(testUsers.male);
+      const femaleFactor = alcomath.getWidmarkFactorForUser(testUsers.female);
+      assert(Math.abs(maleFactor - 0.76227) < 1e-4);
+      assert(Math.abs(femaleFactor - 0.58063) < 1e-4);
+    });
   });
 
   describe('getUserMetabolismRate()', function() {
@@ -120,6 +127,10 @@ describe('alcomath.js', function() {
       assert(x < y);
       assert(y < z);
       assert(z < final);
+      const expectedMax =
+        constants.STANDARD_DRINK_GRAMS /
+        (alcomath.getWidmarkFactorForUser(testUsers.male) * testUsers.male.weight);
+      assert(Math.abs(final - expectedMax) < 1e-6);
     });
   });
 
@@ -129,6 +140,17 @@ describe('alcomath.js', function() {
       const ebac = 0.5;
 
       assert(alcomath.estimateUnburnedAlcohol(testUsers.male, ebac, hours) > 0);
+    });
+
+    it('should return grams matching estimateAbsorbedAlcoholConcentration at t=0.5', function() {
+      const ebac = 0.5;
+      const unburnedGrams = alcomath.estimateUnburnedAlcohol(testUsers.male, ebac);
+      const absorbedEbac = alcomath.estimateAbsorbedAlcoholConcentration(
+        testUsers.male,
+        unburnedGrams * 1000,
+        0.5,
+      );
+      assert(Math.abs(absorbedEbac - ebac) < 1e-9);
     });
   });
 
