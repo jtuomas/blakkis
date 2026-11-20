@@ -24,11 +24,12 @@
 
 const Commands = require('../lib/commands.js');
 const strings = require('../strings.js');
+const utils = require('../lib/utils.js');
 
 function whoAmI(context, msg, words, user) {
   return context.privateReply(
     strings.commands.whoami.reply.format({
-      username: user.username,
+      username: utils.escapeMarkdown(user.username),
       user_id: user.userId,
       weight: user.weight,
       height: user.height,

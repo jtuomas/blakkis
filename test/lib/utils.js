@@ -397,6 +397,24 @@ describe('utils', function() {
     });
   });
 
+  describe('escapeMarkdown()', function() {
+    it('should escape Telegram Markdown special characters', function() {
+      assert.equal(utils.escapeMarkdown('test_user*1`x[y'), 'test\\_user\\*1\\`x\\[y');
+    });
+
+    it('should leave normal text unchanged and handle null/undefined', function() {
+      assert.equal(utils.escapeMarkdown('normal user 123'), 'normal user 123');
+      assert.equal(utils.escapeMarkdown(null), '');
+      assert.equal(utils.escapeMarkdown(undefined), '');
+    });
+  });
+
+  describe('String.prototype.format()', function() {
+    it('should not interpret $ sequences in replacement values', function() {
+      assert.equal('Moikka {name}!'.format({ name: 'a$1$$$&b' }), 'Moikka a$1$$$&b!');
+    });
+  });
+
   after(function() {
     delete require.cache[require.resolve('../../app/lib/utils.js')];
     process.env.SECRET = realsecret;

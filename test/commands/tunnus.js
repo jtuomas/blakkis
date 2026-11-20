@@ -129,4 +129,26 @@ describe('tunnus.js', function() {
       })
       .catch(err => done(err));
   });
+
+  it('Calling /tunnus should escape Markdown characters in username on welcome message', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const userId = 1338;
+    mocked.msg.from.id = userId;
+    mocked.msg.from.username = 'test_user*1';
+
+    Commands.call('/tunnus', mocked.msg, ['/tunnus'])
+      .then(() => Commands.call('80', mocked.msg, ['80']))
+      .then(() => Commands.call('190', mocked.msg, ['190']))
+      .then(() => Commands.call(strings.gender.male, mocked.msg, [strings.gender.male]))
+      .then(() =>
+        Commands.call(strings.commands.tunnus.terms_answer_yes, mocked.msg, [
+          strings.commands.tunnus.terms_answer_yes,
+        ]),
+      )
+      .then(() => {
+        assert(mocked.internals.sentText.includes('test\\_user\\*1'));
+        done();
+      })
+      .catch(err => done(err));
+  });
 });
