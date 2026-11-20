@@ -126,7 +126,7 @@ let command = {
           return users.new(userId, username, weight, gender, height, true).then(user => {
             return context.privateReply(
               strings.commands.tunnus.new_user.format({
-                username: user.username,
+                username: utils.escapeMarkdown(user.username),
               }),
             );
           });

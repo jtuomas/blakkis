@@ -363,6 +363,17 @@ utils.toCsv = (columns, rows) => {
 };
 
 /*
+    Escapes Telegram legacy Markdown (v1) special characters so user-provided
+    strings do not break entity parsing.
+*/
+utils.escapeMarkdown = function(text) {
+  if (text === null || text === undefined) {
+    return '';
+  }
+  return String(text).replace(/([_*`\[])/g, '\\$1');
+};
+
+/*
     Placeholder string format
     https://stackoverflow.com/questions/18405736/is-there-a-c-sharp-string-format-equivalent-in-javascript
 */
@@ -370,7 +381,7 @@ String.prototype.format = function(placeholders) {
   let s = this;
   for (let propertyName in placeholders) {
     let re = new RegExp('{' + propertyName + '}', 'gm');
-    s = s.replace(re, placeholders[propertyName]);
+    s = s.replace(re, () => placeholders[propertyName]);
   }
   return s;
 };
