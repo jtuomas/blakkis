@@ -42,7 +42,7 @@ module.exports = {
     _onSelect: (context, user, msg, words) => {
       return Promise.resolve(
         str_asetukset.muokkaa.on_select.format({
-          username: user.username,
+          username: utils.escapeMarkdown(user.username),
           user_id: user.userId,
           weight: user.weight,
           height: user.height,
@@ -126,7 +126,7 @@ module.exports = {
           .then(() => users.find(msg.from.id))
           .then(updatedUser => {
             return str_asetukset.paivita.on_select.format({
-              username: updatedUser.username,
+              username: utils.escapeMarkdown(updatedUser.username),
             });
           });
       },

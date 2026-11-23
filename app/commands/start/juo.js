@@ -62,7 +62,7 @@ function makeDrinksListString(drinks) {
         if (drinkMinutes.length === 1) {
             drinkMinutes = '0' + drinkMinutes;
         }
-        list.push(drinkHours + ':' + drinkMinutes + ' ' + drink.description);
+        list.push(drinkHours + ':' + drinkMinutes + ' ' + utils.escapeMarkdown(drink.description));
     }
     return list.join('\n');
 }
@@ -281,7 +281,7 @@ module.exports = {
                     if (drink) {
                         context.storeVariable('kumoa_drink', drink);
                         return str_juo.kumoa.on_select.format({
-                            last_drink_name: drink.description,
+                            last_drink_name: utils.escapeMarkdown(drink.description),
                             last_drink_created: drink.created
                         });
                     } else {

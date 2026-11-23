@@ -29,7 +29,7 @@ const strings = require('../strings.js');
 function printAdminStats(context, msg, words, user) {
   return stats.getGlobalStats().then(res => {
     let top10text = res.top10UserStats
-      .map(stats => utils.decrypt(stats.nick) + ' - ' + stats.count)
+      .map(stats => utils.escapeMarkdown(utils.decrypt(stats.nick)) + ' - ' + stats.count)
       .join('\n');
     return context.privateReply(
       strings.commands.admin_stats.stats_text.format({
