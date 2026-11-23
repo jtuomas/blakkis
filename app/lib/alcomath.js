@@ -83,7 +83,7 @@ let alcomath = (module.exports = {});
     r(male) = 0.31608 – 0.004821W + 0.4632H
 */
 alcomath.getWidmarkFactorForUser = user => {
-  const H = user.height;
+  const H = user.height / 100;
   const W = user.weight;
   return user.gender === 'mies'
     ? 0.31608 - 0.004821 * W + 0.4632 * H
@@ -98,17 +98,14 @@ alcomath.getUserMetabolismRate = function() {
 /*
     Alcohol absorbed = (A[ingested]*(1 – e^(−t * ln(2)/t[1_2])))/(r*W)
 */
-const MAGIC_NUMBER = 6.9; // found by trial and error when comparing to multiple measurements
-
 alcomath.estimateAbsorbedAlcoholConcentration = (user, milligrams, drinking_period) => {
   const grams = milligrams / 1000;
-  const A = grams / MAGIC_NUMBER;
   const r = alcomath.getWidmarkFactorForUser(user);
   const half_t = 0.1066; // half life of absorption
   const t = drinking_period;
   const W = user.weight;
 
-  const eaac = ((A * (1 - Math.exp((-t * Math.log(2)) / half_t))) / (r * W)) * 1000; // * 1000 convert to permilles
+  const eaac = (grams * (1 - Math.exp((-t * Math.log(2)) / half_t))) / (r * W);
 
   return eaac > 0 ? eaac : 0;
 };
@@ -119,8 +116,7 @@ alcomath.estimateUnburnedAlcohol = (user, ebac) => {
   const t = 0.5;
   const W = user.weight;
 
-  const A =
-    (((ebac / 1000) * (r * W)) / (1 - Math.exp((-t * Math.log(2)) / half_t))) * MAGIC_NUMBER;
+  const A = (ebac * (r * W)) / (1 - Math.exp((-t * Math.log(2)) / half_t));
 
   return A > 0 ? A : 0;
 };
