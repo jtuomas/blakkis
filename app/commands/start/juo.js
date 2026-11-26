@@ -136,14 +136,27 @@ module.exports = {
                     help_example: str_juo.oma.help_example
                 }));
             }
-            const cl = words[0].replace('cl', ''),
-                vol = words[1].replace('%', '');
+            const rawCl = words[0].replace(/cl/i, ''),
+                rawVol = words[1].replace('%', '');
 
-            if (!utils.isValidFloat(cl)) {
+            if (!utils.isValidFloat(rawCl)) {
                 return Promise.resolve(str_juo.oma.error_cl.format({
                     help_example: str_juo.oma.help_example
                 }));
-            } else if (!utils.isValidFloat(vol)) {
+            } else if (!utils.isValidFloat(rawVol)) {
+                return Promise.resolve(str_juo.oma.error_vol.format({
+                    help_example: str_juo.oma.help_example
+                }));
+            }
+
+            const cl = utils.parseFloat(rawCl);
+            const vol = utils.parseFloat(rawVol);
+
+            if (cl <= 0) {
+                return Promise.resolve(str_juo.oma.error_cl.format({
+                    help_example: str_juo.oma.help_example
+                }));
+            } else if (vol < 0 || vol > 100) {
                 return Promise.resolve(str_juo.oma.error_vol.format({
                     help_example: str_juo.oma.help_example
                 }));
@@ -193,7 +206,7 @@ module.exports = {
 
             // validate each tuple
             for (let i = 0; i < words.length; i += 2) {
-                const centiliters = utils.parseFloat(words[i].replace('cl', ''));
+                const centiliters = utils.parseFloat(words[i].replace(/cl/i, ''));
                 const vol = utils.parseFloat(words[i + 1].replace('%', ''));
                 if (!utils.isValidFloat(centiliters) || !utils.isValidFloat(vol) ||
                     centiliters < 0 || centiliters > 250 ||
@@ -216,8 +229,8 @@ module.exports = {
             for (let i = 0; i < words.length; i += 2) {
                 drinks.push({
                     name: str_juo.jalkikellotus.drink_name,
-                    centiliters: utils.parseFloat(words[i]),
-                    vol: utils.parseFloat(words[i + 1])
+                    centiliters: utils.parseFloat(words[i].replace(/cl/i, '')),
+                    vol: utils.parseFloat(words[i + 1].replace('%', ''))
                 });
             }
             context.storeVariable('jalkikellotus_drinks', drinks);

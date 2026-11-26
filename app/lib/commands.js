@@ -125,6 +125,10 @@ function sendErrorMessage(msg, err) {
     case errors.UserNotReadTerms:
       return msg.sendPrivateMessage(strings.commands.blakkis.please_update_user_info);
     default:
+      if (err && err.message && err.message.includes('TOPIC_CLOSED')) {
+        log.warn(`Topic closed when replying to command ${commandOf(msg)}`);
+        return Promise.resolve();
+      }
       log.error('!!!Unknown error!!!');
       log.error(err);
       log.error('command: ' + commandOf(msg) + ', chat type: ' + (msg.chat && msg.chat.type));

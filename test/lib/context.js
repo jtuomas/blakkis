@@ -123,6 +123,16 @@ describe('context.js', function() {
       assert.equal(mocked.internals.sentChatId, mocked.chatId);
       assert.equal(mocked.internals.sentText, text);
     });
+
+    it('should include message_thread_id when msg is in a forum topic', function() {
+      const mocked = blakkistest.mockMsgAndBot();
+      mocked.msg.is_topic_message = true;
+      mocked.msg.message_thread_id = 42;
+      const context = new contexts.Context({}, mocked.msg);
+      context.chatReply('topic reply');
+      assert.equal(mocked.internals.sentChatId, mocked.chatId);
+      assert.deepEqual(mocked.internals.sentOptions, { message_thread_id: 42 });
+    });
   });
 
   describe('Context.photoReply()', function() {
@@ -135,6 +145,15 @@ describe('context.js', function() {
       assert.equal(mocked.internals.sentChatId, mocked.chatId);
       assert.equal(mocked.internals.sentStream, stream);
       assert.equal(mocked.internals.sentOptions.caption, caption);
+    });
+
+    it('should include message_thread_id in photoReply when msg is in a forum topic', function() {
+      const mocked = blakkistest.mockMsgAndBot();
+      mocked.msg.is_topic_message = true;
+      mocked.msg.message_thread_id = 42;
+      const context = new contexts.Context({}, mocked.msg);
+      context.photoReply('stream', 'topic photo');
+      assert.equal(mocked.internals.sentOptions.message_thread_id, 42);
     });
   });
 

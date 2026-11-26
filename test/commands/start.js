@@ -410,4 +410,33 @@ describe('start/asetukset.js', function() {
       })
       .catch(err => done(err));
   });
+
+  it('Juo->Oma should accept comma decimal values like "44cl 5,5%" without NaN', function(done) {
+    const mocked = blakkistest.mockMsgAndBot();
+    const user = blakkistest.users[0];
+    mocked.msg.from.id = blakkistest.realIds[0];
+    Commands.call('/start', mocked.msg, ['/start'])
+      .then(() => {
+        mocked.msg.data = '/start ' + strings.commands.start.juo.button_text;
+        mocked.msg.addMessageObj();
+        return Commands.call('', mocked.msg, ['']);
+      })
+      .then(() => {
+        mocked.msg.data = '/start ' + strings.commands.start.juo.oma.button_text;
+        mocked.msg.addMessageObj();
+        return Commands.call('', mocked.msg, ['']);
+      })
+      .then(() => {
+        mocked.msg.data = undefined;
+        mocked.msg.text = '44cl 5,5%';
+        return Commands.call('44cl', mocked.msg, ['44cl', '5,5%']);
+      })
+      .then(() => user.getBooze())
+      .then(rows => {
+        assert.equal(rows.length, 3);
+        assert(rows.find(x => x.description === 'Oma juoma - 44cl 5.5%'));
+        done();
+      })
+      .catch(err => done(err));
+  });
 });

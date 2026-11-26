@@ -52,8 +52,12 @@ function createSendPrivateMsgFunction(msg, bot) {
 
 function createSendChatMsgFunction(msg, bot) {
   return function(text) {
+    const options =
+      msg.is_topic_message && msg.message_thread_id
+        ? { message_thread_id: msg.message_thread_id }
+        : undefined;
     return bot
-      .sendMessage(msg.chat.id, text)
+      .sendMessage(msg.chat.id, text, options)
       .then(() => {
         log.debug('sent ' + text + ' to chat ' + msg.chat.title);
         return Promise.resolve();
