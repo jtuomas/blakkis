@@ -121,13 +121,21 @@ contexts.Context = class {
   }
 
   chatReply(text) {
-    return this.msg.sendMessage(this.msg.chat.id, text);
+    const options =
+      this.msg.is_topic_message && this.msg.message_thread_id
+        ? { message_thread_id: this.msg.message_thread_id }
+        : undefined;
+    return this.msg.sendMessage(this.msg.chat.id, text, options);
   }
 
   photoReply(stream, caption) {
-    return this.msg.sendPhoto(this.msg.chat.id, stream, {
+    const options = {
       caption: caption,
-    });
+    };
+    if (this.msg.is_topic_message && this.msg.message_thread_id) {
+      options.message_thread_id = this.msg.message_thread_id;
+    }
+    return this.msg.sendPhoto(this.msg.chat.id, stream, options);
   }
 
   privateDocumentReply(buffer, filename, contentType) {

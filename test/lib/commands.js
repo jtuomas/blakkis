@@ -275,5 +275,33 @@ describe('commands.js', function() {
         })
         .catch(err => done(err));
     });
+
+    it('should not notify admins or send error PM on TOPIC_CLOSED', function() {
+      const originalAdmins = settings.admin_ids;
+      settings.admin_ids = [99999];
+      const mocked = blakkistest.mockMsgAndBot();
+      const sentTo = [];
+      mocked.bot.sendMessage = chatId => {
+        sentTo.push(chatId);
+        return Promise.resolve();
+      };
+      Commands.register(
+        '/testtopicclosed',
+        '/testtopicclosed',
+        Commands.SCOPE_ALL,
+        Commands.PRIVILEGE_ALL,
+        Commands.TYPE_SINGLE,
+        () => Promise.reject(new Error('ETELEGRAM: 400 Bad Request: TOPIC_CLOSED')),
+      );
+      return Commands.call('/testtopicclosed', mocked.msg, ['/testtopicclosed'])
+        .then(() => {
+          assert.deepEqual(sentTo, []);
+          settings.admin_ids = originalAdmins;
+        })
+        .catch(err => {
+          settings.admin_ids = originalAdmins;
+          throw err;
+        });
+    });
   });
 });

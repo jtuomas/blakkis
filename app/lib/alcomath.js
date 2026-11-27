@@ -230,5 +230,5 @@ alcomath.toStandardDrinks = (alcohol_grams, decimals) => {
 };
 
 alcomath.isAlcoholAmountOutOfLimits = mg => {
-  return mg > constants.SINGLE_DRINK_ALCOHOL_LIMIT;
+  return !Number.isFinite(mg) || mg < 0 || mg > constants.SINGLE_DRINK_ALCOHOL_LIMIT;
 };
